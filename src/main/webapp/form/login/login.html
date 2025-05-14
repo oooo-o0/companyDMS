@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>テスト用ログイン画面</title>
+
+<script src="../../lib/jQuery/jquery-3.7.1.min.js"></script>
+<script src="../../js/base.js?p=(new Date()).getTime()"></script>
+<script src="login.js?p=(new Date()).getTime()"></script>
+
+</head>
+<body>
+	<table style="border:none;border-collapse:collapse;">
+		<tr>
+			<td align="right" style="width:200px;">テスト用ログイン画面</td><td></td><td align="right">IBINET</td>
+		</tr>
+		<tr>
+			<td colspan="1" align="right" style="background-color:#666666;width:100px;height:35px;"/>
+			<td colspan="5" align="right" style="background-color:#666666;width:600px;">
+				<label for="name1">ユーザー</label>
+				<select id="userIdSelectList" style="height:25px;">
+					<option selected disabled>
+					</option>
+				</select>
+				<button id="login">ログイン</button>
+			</td>
+			<td colspan="1" align="right" style="background-color:#666666;width:100px;height:35px;"/>
+		</tr>
+	</table>
+</body>
+</html>

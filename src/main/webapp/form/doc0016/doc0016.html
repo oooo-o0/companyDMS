@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>被保険者証情報入力</title>
+<link rel="stylesheet" href="../../lib/jQuery/1.13.2/jquery-ui.min.css">
+<script src="../../lib/jQuery/jquery-3.7.1.min.js"></script>
+<script src="../../lib/jQuery/1.13.2/jquery-ui.min.js"></script>
+<script src="../../js/base.js?p=(new Date()).getTime()"></script>
+<script src="../../js/dateUtil.js?String(p=(new Date()).getTime())"></script>
+<script src="../../js/inputCheckUtil.js?p=(new Date()).getTime()"></script>
+<link rel="stylesheet" href="doc0016.css?p=(new Date()).getTime()">
+<script src="doc0016.js?"></script>
+</head>
+<body>
+
+<!-- エラーメッセージ  -->
+<div id="message"></div>
+
+<!-- 被保険者証情報入力  -->
+<div style="" id="input" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">被保険者証情報入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">記号</th>
+      <td><input type="text" id="kigo" size="10" maxlength="8"></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">番号</th>
+      <td><input type="text" id="no" size="5" maxlength="2" /></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">保険者番号</th>
+      <td><input type="text" id="health_no" size="10" maxlength="8" /></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">交付日</th>
+      <td>
+      <span id="grant_date"></span>
+      <input type="checkbox" name="check1" id="chk1" size="1" maxlength="1" />和暦</td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

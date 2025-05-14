@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>テスト用メニュー</title>
+
+<!-- popup用 start -->
+<link rel="stylesheet" href="../../lib/jQuery/1.13.2/jquery-ui.min.css">
+<!-- popup用 end -->
+<script src="../../lib/jQuery/jquery-3.7.1.min.js"></script>
+<!-- popup用 start -->
+<script src="../../lib/jQuery/1.13.2/jquery-ui.min.js"></script>
+<!-- popup用 end -->
+<script src="../../js/base.js?p=(new Date()).getTime()"></script>
+<script src="../../js/dateUtil.js?p=(new Date()).getTime()"></script>
+<link rel="stylesheet" href="menu.css?p=(new Date()).getTime()">
+<script src="menu.js?12345"></script>
+
+</head>
+<body>
+
+	<TABLE  STYLE="border:none;border-collapse:collapse;margin: 40px  0px 0px 500px;">
+		<TR >
+	    	<TD align="left">テスト用メニュー</TD><TD align="right" STYLE="width:100px;margin: 0px  0px 0px 50px;">IBINET</TD>
+	    	<TD STYLE="width:200px;margin: 0px  0px 0px 50px;"></TD><TD STYLE="font-size:12px;width:300px;margin: 0px  0px 0px 50px;">ログインユーザー：
+	    	<label STYLE="font-size:12px;margin: 0px  0px 0px 5px;" for="name1" id="useName"></label></TD>
+	  	</TR>
+		<TR>
+			<TABLE  STYLE="border:none;border-collapse:collapse;margin: 20px  0px 0px 100px;">
+				<TR >
+			    	<TD STYLE="margin: 20px  0px 0px 200px;">共通画面</TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD>
+				</TR>
+				<TR >
+					<TD STYLE="width:300px;"><BUTTON id="btn16" STYLE="font-size:11px;">被保険者証情報入力ポップアップ画面<BR>(doc0016)</BUTTON></TD>
+				</TR>
+			</TABLE>
+			<TABLE  STYLE="border:none;border-collapse:collapse;margin: 20px  0px 0px 100px;">
+				<TR >
+			    	<TD STYLE="margin: 20px  0px 0px 200px;">管理者用画面</TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD>
+				</TR>
+				<TR >
+					<TD STYLE="width:230px;"><BUTTON id="btn1" STYLE="font-size:11px;">社内送信BOX画面（管理者用）<BR>(doc0001)</BUTTON></TD>
+					<TD STYLE="width:230px;"><BUTTON id="btn2" STYLE="font-size:11px;">社内受信BOX画面（管理者用）<BR>(doc0002)</BUTTON></TD>
+					<TD STYLE="width:230px;"><BUTTON id="btn5" STYLE="font-size:11px;">文書登録画面（管理者用）の新規登録<BR>(doc0005)</BUTTON></TD>
+					<TD STYLE="width:230px;"><BUTTON id="btn6" STYLE="font-size:11px;">文書登録画面（管理者用）の閲覧<BR>(doc0006)</BUTTON></TD>
+					<TD STYLE="width:230px;"><BUTTON id="btn7" STYLE="font-size:11px;">文書登録画面（管理者用）の変更<BR>(doc0007)</BUTTON></TD>
+				</TR>
+				<TR>
+					<TD STYLE="width:200px;"><BUTTON id="btn8" STYLE="font-size:11px;">文書登録画面（管理者用）の削除<BR>(doc0008)</BUTTON></TD>
+					<TD STYLE="width:200px;"><BUTTON id="btn9" STYLE="font-size:11px;">文書閲覧画面（管理者用）<BR>(doc0009)</BUTTON></TD>
+					<TD STYLE="width:200px;"><BUTTON id="btn10" STYLE="font-size:11px;">共通連絡登録画面（管理者用）の新規登録<BR>(doc0010)</BUTTON></TD>
+					<TD STYLE="width:200px;"><BUTTON id="btn11" STYLE="font-size:11px;">共通連絡登録画面（管理者用）の閲覧<BR>(doc0011)</BUTTON></TD>
+					<TD STYLE="width:200px;"><BUTTON id="btn12" STYLE="font-size:11px;">共通連絡登録画面（管理者用）の変更<BR>(doc0012)</BUTTON></TD>
+				</TR>
+				<TR>
+					<TD STYLE="width:200px;"><BUTTON id="btn13" STYLE="font-size:11px;">共通連絡登録画面（管理者用）の削除<BR>(doc0013)</BUTTON></TD>
+					<TD STYLE="width:200px;"><BUTTON id="btn14" STYLE="font-size:11px;">社員マスタ登録画面（管理者用）<BR>(doc0014)</BUTTON></TD>
+					<TD STYLE="width:200px;"><BUTTON id="btn15" STYLE="font-size:11px;">指摘内容記載ポップアップ<BR>(doc0015)</BUTTON></TD>
+					<TD STYLE="width:230px;"><BUTTON id="btn5b" STYLE="font-size:11px;">文書登録画面（管理者用）の新規登録<BR>(doc0005b)</BUTTON></TD>
+				</TR>
+			</TABLE>
+			<TABLE  STYLE="border:none;border-collapse:collapse;margin: 20px  0px 0px 100px;">
+				<TR >
+			    	<TD align="left">一般社員用画面</TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD>
+				</TR>
+				<TR >
+					<TD STYLE="width:200px;"><BUTTON id="btn3" STYLE="font-size:11px;">社内受信BOX画面（一般社員用）<BR>(doc0003)</BUTTON></TD>
+					<TD STYLE="width:200px;"><BUTTON id="btn4" STYLE="font-size:11px;">社内送信BOX画面（一般社員用）<BR>(doc0004)</BUTTON></TD>
+					<TD STYLE="width:200px;"><BUTTON id="btn17" STYLE="font-size:11px;">文書登録（一般社員用）<BR>(doc0017)</BUTTON></TD>
+					<TD STYLE="width:250px;"><BUTTON id="btn18" STYLE="font-size:11px;">文書閲覧画面（一般社員用）の給与明細<BR>(doc0018)</BUTTON></TD>
+					<TD STYLE="width:250px;"><BUTTON id="btn19" STYLE="font-size:11px;">文書閲覧画面（一般社員用）の連絡内容<BR>(doc0019)</BUTTON></TD>
+				</TR>
+				<TR>
+					<TD STYLE="width:200px;"><BUTTON id="btn20" STYLE="font-size:11px;">連絡内容記載ポップアップ<BR>(doc0020)</BUTTON></TD>
+				</TR>
+			</TABLE>
+		</TR>
+	</TABLE>
+
+<!-- doc0002パラメータ入力  -->
+<div id="input_doc0002" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0002パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym" type="month" value="2021-05" autofocus></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0004パラメータ入力  -->
+<div  id="input_doc0004" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0004パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym2" type="month" value="2021-05" autofocus></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0005パラメータ入力  -->
+<div  id="input_doc0005" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0005パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym3" type="month" value="2021-06" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code5" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0006パラメータ入力  -->
+<div  id="input_doc0006" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:850px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0006パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym4" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code6" size="5" maxlength="5"/></td>
+    </tr>
+
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">文書種類</th>
+ 		<td>
+ 			<input type="radio" name="radio_grop3" value="001" checked>給料明細
+ 			<input type="radio" name="radio_grop3" value="002">給料明細添付資料
+ 			<input type="radio" name="radio_grop3" value="003">共通連絡
+ 			<input type="radio" name="radio_grop3" value="004">連絡文書
+		</td>
+    </tr>
+
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">文書名</th>
+      <td><input type="file" id="parm_doc_name6" name="upfile"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0007パラメータ入力  -->
+<div  id="input_doc0007" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0007パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym5" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code7" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">文書種類</th>
+ 		<td>
+ 			<input type="radio" name="radio_grop4" value="001" checked>給料明細
+ 			<input type="radio" name="radio_grop4" value="002">給料明細添付資料
+ 			<input type="radio" name="radio_grop4" value="003">共通連絡
+ 			<input type="radio" name="radio_grop4" value="004">連絡文書
+		</td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">文書名</th>
+      <td><input type="file" id="parm_doc_name7" name="upfile"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0008パラメータ入力  -->
+<div  id="input_doc0008" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0008パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym6" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code8" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">文書種類</th>
+ 		<td>
+ 			<input type="radio" name="radio_grop5" value="001" checked>給料明細
+ 			<input type="radio" name="radio_grop5" value="002">給料明細添付資料
+ 			<input type="radio" name="radio_grop5" value="003">共通連絡
+ 			<input type="radio" name="radio_grop5" value="004">連絡文書
+		</td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">文書名</th>
+      <td><input type="file" id="parm_doc_name8" name="upfile"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0009パラメータ入力  -->
+<div  id="input_doc0009" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0009パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym7" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code9" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0010パラメータ入力  -->
+<div  id="input_doc0010" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0010パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym8" type="month" value="2021-05" autofocus></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0011パラメータ入力  -->
+<div  id="input_doc0011" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0011パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym9" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">連絡タイトル</th>
+      <td><input type="text" id="parm_doc_name11"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0012パラメータ入力  -->
+<div  id="input_doc0012" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0012パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym10" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">連絡タイトル</th>
+      <td><input type="text" id="parm_doc_name12"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0013パラメータ入力  -->
+<div  id="input_doc0013" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0013パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym11" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">連絡タイトル</th>
+      <td><input type="text" id="parm_doc_name13"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0015パラメータ入力  -->
+<div  id="input_doc0015" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0015パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">起動モード</th>
+ 		<td>
+ 			<input type="radio" name="radio_grop" value="0" checked>表示モード
+ 			<input type="radio" name="radio_grop" value="1">登録モード
+		</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym12" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code15" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">文書種類</th>
+ 		<td>
+ 			<input type="radio" name="radio_grop6" value="005" checked>勤務表
+ 			<input type="radio" name="radio_grop6" value="006">交通費
+		</td>
+    </tr>
+
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">文書名</th>
+      <td><input type="file" id="parm_doc_name15" name="upfile"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0017パラメータ入力  -->
+<div  id="input_doc0017" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0017パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym13" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code17" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0018パラメータ入力  -->
+<div  id="input_doc0018" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0018パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym14" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code18" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">文書種類</th>
+ 		<td>
+ 			<input type="radio" name="radio_grop2" value="001" checked>給料明細
+ 			<input type="radio" name="radio_grop2" value="002">給料明細添付資料
+		</td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">文書名</th>
+      <td><input type="file" id="parm_doc_name18" name="upfile"></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">受信日時</th>
+      <td><input STYLE="font-size:12px;width:215px;" id="parm_recive_datetime" type="datetime-local" value="2021-05-01T10:30:01" step="1"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0019パラメータ入力  -->
+<div  id="input_doc0019" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0019パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym15" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">連絡タイトル</th>
+      <td><input type="text" id="parm_doc_name19"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0020パラメータ入力  -->
+<div  id="input_doc0020" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0020パラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym16" type="month" value="2021-05" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code20" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">文書名</th>
+      <td><input type="file" id="parm_doc_name20" name="upfile"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- doc0005bパラメータ入力  -->
+<div  id="input_doc0005b" title="">
+  <table style="margin: 0px  50px 0px 50px;">
+    <tr>
+    	<td colspan="3" style="background-color:#DDEBF7;width:550px;height:35px;">
+			<label style="background-color:#DDEBF7;font-size:18px;margin: 0px  0px 0px 100px;" for="name1">doc0005bパラメータ入力</label>
+    	</td>
+    </tr>
+    <tr style="height:40px;">
+    	<th colspan="2" align="left" style="font-size:16px;font-weight:normal;margin: 10px  0px 0px 0px;">年月</th>
+ 		<td><input STYLE="font-size:12px;width:115px;" id="parm_ym17" type="month" value="2021-06" autofocus></td>
+    </tr>
+    <tr style="height:40px;">
+      <th colspan="2" align="left" style="font-size:16px;font-weight: normal;">社員番号</th>
+      <td><input type="text" id="parm_empl_code21" size="5" maxlength="5" value="99998"/></td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>
