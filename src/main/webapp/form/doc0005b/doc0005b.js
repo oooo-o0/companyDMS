@@ -33,69 +33,24 @@ $(document).ready(function(){
 	userInfoArray = init("");
 
 	docInit();
-
-    //受信BOX切替ボタンのクリックイベント設定
-    $("#reciveBoxBtn").click(function(){
-	    subReciveBox();
- 	});
-
-    //社員マスタ登録ボタンのクリックイベント設定
-    $("#emplMstBtn").click(function(){
-	    subEmplMst();
- 	});
-
-    //共通連絡新規登録ボタンのクリックイベント設定
-    $("#insertDocBodyBtn").click(function(){
-	    subInsertDocBody();
- 	});
-
-    //閉じるボタンのクリックイベント設定
-    $("#closeBtn").click(function(){
-	    subClose();
- 	});
-
-    //検索ボタンのクリックイベント設定
-    $("#searchBtn").click(function(){
-	    execSearch();
- 	});
-
-    //年月の変更イベント設定
-    $("#month1").change(function(){
-	    subYMChange();
- 	});
-
-    //文書セレクトボックスの変更イベント設定
-    $("#docSelectList").change(function(){
-	    subDocSelectChange();
- 	});
-
-    //社員セレクトボックスの変更イベント設定
-    $("#emplSelectList").change(function(){
-	    subEmplSelectChange();
- 	});
-
-    //登録状況セレクトボックスの変更イベント設定
-    $("#insertStatusSelectList").change(function(){
-	    subInsertStatusSelectChange();
- 	});
-
-    //状況セレクトボックスの変更イベント設定
-    $("#statusSelectList").change(function(){
-	    subStatusSelectChange();
- 	});
  	
  	//ファイルアップロードボタンの選択イベント設定
- 	$("#fileSelectBtn").change (function(){
-		 //subReciveBox();
-		 //var filePath = $(this).val();
-		 var filePath =$(this).prop('files')[0].name;
-		 $(this).val("");
-	 });
-	 
+	$("#fileSelectBtn").change(function(){
+		var filePath = $(this).prop('files')[0].name;
+		$("#file_select_text").val(filePath);
+		$(this).val("");
+	});
+	
+	//文書分類セレクトボックスの選択イベント設定
  	$("#docTypeSelectList").change(function(){
 	    subChange();
  	});
-
+ 	
+ 	//有効期限開始日の選択イベント設定
+ 	$("#dateFrom").change(function(){
+		var selectDateFrom = $(this).val();
+		document.getElementById("dateTo").min = selectDateFrom;
+	 });
 });
 
 function subChange() {
@@ -103,6 +58,7 @@ function subChange() {
 	 //selectrdArray = [];
 	 //選択文書分類の名称コード
      var strVal = $('option:selected').val();
+     
      //年月と選択文字で文書タイトルを自動セット
      var strText = $('option:selected').text();
      var nengetu = $("#targetYm").text();
@@ -177,6 +133,8 @@ $(window).on('load',function(){
 		//保存期間（月数）を加算する
 		var addMonthDay = addMonthVal(addDay, numMonth);
 		$("#dateTo").val(addMonthDay);
+		// 有効期限終了日の最小値を有効期限開始日の値にする
+		document.getElementById("dateTo").min = addDay;
 	}
 	/**
 	 * セレクトボックスの初期処理
