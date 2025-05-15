@@ -1,31 +1,45 @@
 /**
- * doc0001.js
- * 社内送信BOX画面のセレクトボックスと動的HTML生成
+ * doc0005b.js
+ * 文書登録（管理者用）
  * @author D.Ikeda
- *    Date:2021/04/30
+ *    Date:2025/05/15
  * @version 1.0.0
  *
  */
 
 //年月
 var strYyyyMm = "";
-
-//文書セレクトボックスの選択値
-var docSelectVal = "";
-
-//社員セレクトボックスの選択値(社員コード)
-var emplSelectVal = "";
-
-//登録状況セレクトボックスの選択値
-var insertStatusSelectVal = "";
-
-//状況セレクトボックスの選択値
-var statusSelectVal = "";
-
 var userInfoArray = [];
 
-//操作ボタン押下時の明細の社員コード
-var detailEmplCode = "";
+$(function(){
+	//エラーメッセージダイアログを定義
+	$("#message").dialog({
+		autoOpen:false,
+		modal:true,
+		title:"エラーメッセージ",
+		width:400,
+		height:200,
+		buttons:[
+			{
+				text:'OK',
+				class:'d-button',
+				click:function(){
+					//ボタンを押したときの処理
+					$(this).dialog("close");
+				}
+			}
+		]
+	});
+});
+
+
+//処理メッセージ表示
+function displayMessage(str){
+	$('#message').empty();
+	$('#message').append("<p>" + str + "</p>");
+	$('#message').dialog("open");
+	return false;
+}
 
 //画面の準備
 $(document).ready(function(){
@@ -49,7 +63,13 @@ $(document).ready(function(){
  	//有効期限開始日の選択イベント設定
  	$("#dateFrom").change(function(){
 		var selectDateFrom = $(this).val();
+		//有効期限終了日の最小値を行こう期限開始日の値に変更する
 		document.getElementById("dateTo").min = selectDateFrom;
+	 });
+	 
+	 //登録ボタンのイベント設定
+	 $("#insertBtn").click(function() {
+		 subInsert();
 	 });
 });
 
@@ -351,6 +371,36 @@ function statusSelectBoxInit() {
 	$.each( nameValue, function( key, value ){
 	    $("#statusSelectList").append($("<option>").val(String(value.key)).text(String(value.value)));
     });
+}
+
+//登録処理
+function subInsert(){
+	//入力エラーチェックを行う
+	inputCheck();
+}
+
+//入力チェック処理
+var inputCheck = function() {
+	var ret = "";
+	//記号に値が入っているか？
+	if (isBlank($('#docTypeSelectList').val())) {
+		//エラー"記号は必須です。"
+		displayMessage(getMsg("msg005_001"));
+		return false;
+	}
+	//記号に値が入っているか？
+	if (isBlank($('#doctitil').val())) {
+		//エラー"記号は必須です。"
+		displayMessage(getMsg("msg0005_002"));
+		return false;
+	}
+	//記号に値が入っているか？
+	if (isBlank($('#file_select_text').val())) {
+		//エラー"記号は必須です。"
+		displayMessage(getMsg("msg0005_003"));
+		return false;
+	}
+	return ret;
 }
 
 //年月の変更時

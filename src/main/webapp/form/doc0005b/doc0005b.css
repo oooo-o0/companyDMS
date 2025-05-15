@@ -50,3 +50,44 @@
 	top: 0;
 	width: 100%;
 }
+
+/* ボタンの幅拡大 */
+.d-button {
+  appearance: none;
+  border: 0;
+  border-radius: 5px;
+  /* background: #4676D7; */
+  background: #cecece;
+  /* color: #fff; */
+  padding: 8px 16px;
+  font-size: 16px;
+  width:100px;
+}
+
+.d-button:hover {
+  /* background: #1d49aa; */
+  background: #4e4e4e;
+  color: #ffffff;
+}
+
+.d-button:focus {
+  outline: none;
+  /*box-shadow: 0 0 0 4px #cbd6ee;*/
+}
+
+/* ダイアログのボタンの位置中央 */
+.ui-dialog-buttonset{
+   width: 100%;
+   display: flex;
+   display: -webkit-flex;
+   text-align: center;
+   justify-content: space-around;
+   -webkit-justify-content: space-around;
+}
+
+/* ダイアログのタイトルバー */
+.ui-dialog-titlebar{
+   padding: 0.3rem !important;
+   font-size:14px;
+   font-weight: normal;
+}
