@@ -83,21 +83,112 @@ $(document).ready(function(){
     $("#statusSelectList").change(function(){
 	    subStatusSelectChange();
  	});
+ 	
+ 	//ファイルアップロードボタンの選択イベント設定
+ 	$("#fileSelectBtn").change (function(){
+		 //subReciveBox();
+		 //var filePath = $(this).val();
+		 var filePath =$(this).prop('files')[0].name;
+		 $(this).val("");
+	 });
+	 
+ 	$("#docTypeSelectList").change(function(){
+	    subChange();
+ 	});
 
 });
+
+function subChange() {
+
+	 //selectrdArray = [];
+	 //選択文書分類の名称コード
+     var strVal = $('option:selected').val();
+     //年月と選択文字で文書タイトルを自動セット
+     var strText = $('option:selected').text();
+     var nengetu = $("#targetYm").text();
+     var titleYm = String(nengetu).substring(0,4) + "年" + String(nengetu).substring(5,7) + "月";
+     $("#doctitil").val(titleYm + strText);
+     //selectrdArray = strVal.split(",");
+
+}
 
 function docInit() {
 
 	var emplName = userInfoArray[1];
 	$("#useName").text(emplName);
+	
+	return;
 
 }
 
 //画面の初期ロード
 $(window).on('load',function(){
-
+	
+	//起動パラメータ取得
+	var parm = $(location).attr('search');
+	//var parm =location.seach;
+	var parmArray = [];
+	var parmArray = String(parm).split("?");
+	
 	//年月の初期処理
-	monthInit();
+	monthInit(parmArray[2]);
+	//社員名の初期処理
+	emplInit(parmArray[3]);
+	//有効期限
+	expiration();
+	//文書分類
+	selectBox();
+	
+	/**
+	 * 年月に初期値をセット
+	 */
+	function monthInit(ym){
+		var nengetu = ym.substring(3, 7) + "/" + ym.substring(7, 9);
+		$("#targetYm").text(nengetu);
+	}
+	/**
+	 * 社員名に初期値をセット
+	 */
+	function emplInit(emplCode){
+		var empl_code = String(emplCode);
+		emplInfoArray = getEmplMstInfo(empl_code.substring(4,empl_code.length));
+		
+		$("#targetEmplName").text(emplInfoArray[1]);
+	}
+	/**
+	 * 有効期限に初期値をセット
+	 */
+	function expiration(){
+		/* 有効期限開始日  */
+		//当日を取得
+		var toDay = toDayVal();
+		//1日加算する
+		var addDay = addDayVal(toDay, 1);
+		
+		$("#dateFrom").val(addDay);
+		//有効期限開始日の最小値を当日にする
+		document.getElementById("dateFrom").min = toDay;
+		
+		/**
+		 * 有効期限終了日
+		 */
+		// システムプロパティから保存期間（月数）を取得
+		var numMonth = Number(getProperties("retention"));
+		//保存期間（月数）を加算する
+		var addMonthDay = addMonthVal(addDay, numMonth);
+		$("#dateTo").val(addMonthDay);
+	}
+	/**
+	 * セレクトボックスの初期処理
+	 */
+	function selectBox() {
+		//名称マスタの一覧を取得
+		var nameValue = getNameMst("doc_type","1","");
+		
+		$.each(nameValue, function( key, value ){
+			$("#docTypeSelectList").append($("<option>").val(String(value.key)).text(String(value.value)));
+		});
+	}
 
 	//全セレクトボックスの初期処理
 	selectBoxInitAll();

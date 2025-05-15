@@ -1,42 +1,52 @@
 @CHARSET "UTF-8";
+
 /* ボタンの幅拡大 */
 .c-button {
-  appearance: none;
-  border: 0;
-  border-radius: 5px;
-  /* background: #4676D7; */
-  /* background: #cecece;*/
-  background: #BDD7EE;
-  /* color: #fff; */
-  padding: 8px 16px;
-  font-size: 16px;
-  width:100px;
+	appearance: none;
+	border: 0;
+	border-radius: 5px;
+	/* background: #4676D7; */
+	/* background: #cecece;*/
+	background: #BDD7EE;
+	/* color: #fff; */
+	padding: 8px 16px;
+	font-size: 16px;
+	width: 100px;
 }
 
 .c-button:hover {
-  /* background: #1d49aa; */
-  /* background: #4e4e4e;*/
-  background: #006699;
-  color: #ffffff;
+	/* background: #1d49aa; */
+	/* background: #4e4e4e;*/
+	background: #006699;
+	color: #ffffff;
 }
 
 .c-button:focus {
-  outline: none;
-  /*box-shadow: 0 0 0 4px #cbd6ee;*/
+	outline: none;
+	/*box-shadow: 0 0 0 4px #cbd6ee;*/
+}
+
+.originalFileBtn {
+	border: 0;
+	background: #cecece;
+	border-radius: 3px;
+	font-size: 14px;
+	display: inline-block;
+	padding: 2px 1em;
+	position: relative;
 }
 
 /* ダイアログのボタンの位置中央 */
 .originalFileBtn:hover {
-   background: #4e4e4e;
-   color: #ffffff;
+	background: #4e4e4e;
+	color: #ffffff;
 }
 
-/* ダイアログのタイトルバー */
-.ui-dialog-titlebar{
-   height: 100%;
-   left: 0;
-   opacity: 0;
-   position: absolute;
-   width: 100%;
+.originalFileBtn input[type="file"] {
+	height: 100%;
+	left: 0;
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
 }
-
