@@ -197,29 +197,126 @@ $(document).on('click', '.operation_btn01' , function() {
 //登録処理
 function subInsert(){
 	//入力エラーチェックを行う
-	inputCheck();
+	if (inputCheck()){
+		//入力チェックエラーの場合は処理を抜ける
+		return;
+	}
+	//チェックエラーでない場合は登録処理を実施
+	var url = "http://localhost:8080/ibiDoc/InsertSendReciveTranbServlet?ACTION=";
+	var action = "insert";
+	
+	url += action;
+	
+	var dTime = nowTimeVal();
+	var senddata = {
+		/* 送受信トラン */
+		// 送受信区分
+		send_recive_type : "1",
+		// 年月
+		year_month : String($("#targetYm").text()).replace("/",""),
+		//社員コード
+		empl_code : emplInfoArray[0],
+		//文書名(最終登録文書/文書)
+		doc_name : String($("#file_select_text").val()),
+		//操作区分
+		operation_type : "01",
+		//最終登録日時/最終受信日時
+		last_send_recive_datetime : dTime,
+		//最終登録状況/登録状況
+		insert_status : "01",
+		//閲覧状況/確認状況
+		status : "00",
+		//明細数
+		detail_num : "",
+		//作成日時
+		insert_dateTime : dTime,
+		//作成ユーザー
+		insert_programId : "doc0005",
+		
+		
+		/* 送受信明細トラン */
+		//文書種類
+		doc_type : selectDocType,
+		//操作区分
+		operation_type_detil : "02",
+		//受信日時/最終連絡送信日時
+		send_recive_datetime : "",
+		//閲覧状況/確認状況
+		check_status : "01",
+		//閲覧日時/確認日時
+		check_datetime : "",
+		//指摘内容
+		finger_body : "",
+		
+		
+		/* 文書内容 */
+		//タイトル
+		doc_title : String($("#doctitil").val()),
+		//内容
+		doc_body : "",
+		//有効期限(開始)
+		expiration_from_datetime : String($("#dateFrom").val()).replaceAll("-",""),
+		//有効期限(終了)
+		expiration_to_dateTime : String($("#dateTo").val()).replaceAll("-",""),
+		//メール送信日時/受信日時
+		mail_send_recive_dateTime : ""
+	};
+	
+	//ajax通信
+	var jqXHR = postSeatchSync(senddata,url);
+
+	var retCode = showData(jqXHR);
+
+	if (retCode=="1") {
+	//登録完了
+
+	    	//ファイルアップロード
+	    	subUpload();
+
+			displayMessage(getMsg("msg0005_004"));
+	} else {
+	    if (retCode=="-2") {
+	    //存在チェックエラー
+			displayMessage(getMsg("msg0005_010"));
+	    } else {
+    	//登録失敗
+	    	displayMessage(getMsg("msg0005_005"));
+	    }
+	}
+}
+
+function showData(jqXHR){
+	var ret = "";
+	jqXHR.done(function(data, stat, xhr){
+		//結果を表示
+		$.each( data, function( key, value ){
+			ret = String(value.rtn_code);
+		});
+	});
+	
+	return ret;
 }
 
 //入力チェック処理
 var inputCheck = function() {
-	var ret = "";
+	var ret = true;
 	//文書分類に値が入っているか？
 	if (isBlank($('#docTypeSelectList> option:selected').val())) {
 		//エラー"文書分類は必須です。"
 		displayMessage(getMsg("msg0005_001"));
-		return;
+		return false;
 	}
 	//文書タイトルに値が入っているか？
 	if (isBlank($('#doctitil').val())) {
 		//エラー"文書タイトルは必須です。"
 		displayMessage(getMsg("msg0005_002"));
-		return;
+		return false;
 	}
 	//文書ファイルに値が入っているか？
 	if (isBlank($('#file_select_text').val())) {
 		//エラー"記号は必須です。"
 		displayMessage(getMsg("msg0005_003"));
-		return;
+		return false;
 	}
 	return ret;
 }
