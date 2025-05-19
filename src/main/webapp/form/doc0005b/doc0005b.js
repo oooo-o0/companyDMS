@@ -10,8 +10,10 @@
 //年月
 var strYyyyMm = "";
 var userInfoArray = [];
+var emplInfoArray = [];
 var selectDocType = "";
 var selectDocText;
+var filesData;
 
 $(function(){
 	//エラーメッセージダイアログを定義
@@ -53,6 +55,7 @@ $(document).ready(function(){
  	//ファイルアップロードボタンの選択イベント設定
 	$("#fileSelectBtn").change(function(){
 		var filePath = $(this).prop('files')[0].name;
+		filesData = $(this).prop('files')[0];
 		$("#file_select_text").val(filePath);
 		$(this).val("");
 	});
@@ -82,10 +85,10 @@ function subChange() {
      selectDocType = $('option:selected').val();
      
      //年月と選択文字で文書タイトルを自動セット
-     selectDocText; = $('option:selected').text();
+     selectDocText = $('option:selected').text();
      var nengetu = $("#targetYm").text();
      var titleYm = String(nengetu).substring(0,4) + "年" + String(nengetu).substring(5,7) + "月";
-     $("#doctitil").val(titleYm + strText);
+     $("#doctitil").val(titleYm + selectDocText);
      //selectrdArray = strVal.split(",");
 
 }
