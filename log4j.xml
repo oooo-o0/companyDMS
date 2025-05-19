@@ -42,6 +42,14 @@
 
 
 <!-- ============= Logger ============= -->
+    <!-- アプリケーション Logger
+        アプリケーションのパッケージ配下のクラスは、DEBUG以上を標準出力へ出力する。(nameにはアプリケーションのルートパッケージを指定)
+        root Loggerの設定を引き継ぐため、additivity=trueにしておく
+    -->
+    <category name="jp.co.app" additivity="true">
+        <level value="debug" />
+        <appender-ref ref="Console_Appender" />
+    </category>
 
     <!-- root Logger
         1. すべてのクラスのINFOログを標準出力へ出力する。
@@ -55,13 +63,6 @@
          <appender-ref ref="Error_File_Appender" />
     </root>
 
-    <!-- アプリケーション Logger
-        アプリケーションのパッケージ配下のクラスは、DEBUG以上を標準出力へ出力する。(nameにはアプリケーションのルートパッケージを指定)
-        root Loggerの設定を引き継ぐため、additivity=trueにしておく
-    -->
-    <category name="jp.co.app" additivity="true">
-        <level value="debug" />
-        <appender-ref ref="Console_Appender" />
-    </category>
+
 
 </log4j:configuration>
