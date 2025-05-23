@@ -7,13 +7,13 @@
  *
  */
 
-//年月
-var strYyyyMm = "";
-var userInfoArray = [];
-var emplInfoArray = [];
-var selectDocType = "";
-var selectDocText;
-var filesData;
+//グローバル変数
+var strYyyyMm = "";      // 年月の保存用
+var userInfoArray = [];  // ログインユーザー情報
+var emplInfoArray = [];  // 対象社員情報
+var selectDocType = "";  // 選択した文書分類コード
+var selectDocText;       // 選択した文書分類名
+var filesData;           // アップロードするファイルのデータ
 
 $(function(){
 	//エラーメッセージダイアログを定義
@@ -95,8 +95,9 @@ function subChange() {
 
 //初期処理
 function docInit() {
-
+	// ユーザー情報配列の2番目からユーザー名を取得
 	var emplName = userInfoArray[1];
+	// ID「useName」の要素に取得したユーザー名を表示（jQueryを使用）
 	$("#useName").text(emplName);
 	
 	return;
