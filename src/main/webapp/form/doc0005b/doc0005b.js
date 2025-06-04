@@ -247,7 +247,7 @@ function subInsert(){
 
 	    /*  文書内容  */
 	    // タイトル
-	    doc_title : String($("#docTitle").val()),
+	    doc_title : String($("#doctitil").val()),
 	    // 内容
 	    doc_body : "",
 	    // 有効期限(開始)

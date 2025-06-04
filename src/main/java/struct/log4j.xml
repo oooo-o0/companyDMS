@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<!-- <!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">-->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<!-- ============= Appender ============= -->
+
+    <!-- 標準出力用Appender -->
+    <appender name="Console_Appender" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out"/>
+        <param name="ImmediateFlush" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %d [%t] %m%n" />
+        </layout>
+    </appender>
+
+    <!-- 処理ログ ファイル出力用Appender -->
+    <appender name="Process_File_Appender" class="org.apache.log4j.DailyRollingFileAppender">
+        <!-- <param name="File" value="/var/log/app/info.log" /> -->
+        <param name="File" value="logs/ibiDocInfo.log" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <param name="Append" value="true" />
+        <param name="Encoding" value="UTF-8" />
+        <param name="Threshold" value="INFO" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy/MMM/dd HH:mm:ss.SSS} [%-5p] %m%n" />
+        </layout>
+
+    </appender>
+
+    <!-- エラーログ 用Appender -->
+    <appender name="Error_File_Appender" class="org.apache.log4j.DailyRollingFileAppender">
+        <!-- <param name="File" value="/var/log/app/error.log" /> -->
+        <param name="File" value="logs/ibiDocErr.log" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <param name="Append" value="true" />
+        <param name="Encoding" value="UTF-8" />
+        <param name="Threshold" value="ERROR" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy/MMM/dd HH:mm:ss.SSS} [%-5p] %m%n" />
+        </layout>
+    </appender>
+
+
+<!-- ============= Logger ============= -->
+
+    <!-- root Logger
+        1. すべてのクラスのINFOログを標準出力へ出力する。
+        2. すべてのクラスのINFOログをファイルへ出力する。
+        3. すべてのクラスのERRORログをエラーファイルへ出力する。
+    -->
+    <root>
+        <level value="info"/>
+         <appender-ref ref="Console_Appender" />
+         <appender-ref ref="Process_File_Appender" />
+         <appender-ref ref="Error_File_Appender" />
+    </root>
+
+    <!-- アプリケーション Logger
+        アプリケーションのパッケージ配下のクラスは、DEBUG以上を標準出力へ出力する。(nameにはアプリケーションのルートパッケージを指定)
+        root Loggerの設定を引き継ぐため、additivity=trueにしておく
+    -->
+    <category name="jp.co.app" additivity="true">
+        <level value="debug" />
+        <appender-ref ref="Console_Appender" />
+    </category>
+
+</log4j:configuration>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>文書閲覧画面（管理者用）</title>
+
+<link rel="stylesheet" href="../../lib/jQuery/1.13.2/jquery-ui.min.css">
+<script src="../../lib/jQuery/jquery-3.7.1.min.js"></script>
+<script src="../../lib/jQuery/1.13.2/jquery-ui.min.js"></script>
+<script src="../../js/base.js?9"></script>
+<script src="../../js/dateUtil.js?9"></script>
+<script src="../../js/inputCheckUtil.js?9"></script>
+<link rel="stylesheet" href="doc0006.css?9">
+<script src="doc0006.js?9"></script>
+</head>
+
+<body style="margin: 30px;padding: 0px;">
+<!-- エラーメッセージ -->
+<div id="message"></div>
+
+<table style="border:none;border-collapse:collapse;">
+    <tr>
+        <td colspan="3" style="background-color:#DDEBF7;width:1050px;height:30px;">
+            <label style="background-color:#DDEBF7;font-size:16px;margin: 0px 0px 0px 360px;">
+                文書閲覧
+            </label>
+        </td>
+        <td style="width:600px;"></td>
+    </tr>
+    <tr>
+        <td>
+            <table style="border:none;width:1050px;">
+                <tr>
+                    <td style="width:900px;"></td>
+                    <td style="font-size:14px;width:210px;color:#305496;">
+                        管理者
+                        <label style="font-size:14px;margin: 0px 0px 0px 5px;" id="useName"></label>
+                    </td>
+                    <td style="width:300px;"></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table style="border:none;margin: 0px 0px 0px 100px;">
+                <tr>
+                    <td colspan="7" style="width:950px;height:35px;"></td>
+                </tr>
+                <tr>
+                    <th colspan="3" align="left" style="font-size:16px;font-weight:normal;">
+                        登録対象年月
+                    </th>
+                    <td colspan="3" style="width:950px;height:35px;">
+                        <label style="font-size:14px;margin-left:5px;" id="targetYm"></label>
+                    </td>
+                </tr>
+                <tr style="height:40px;">
+                    <th colspan="3" align="left" style="font-size:16px;font-weight:normal;">
+                        文書分類
+                    </th>
+                    <td>
+                        <label id="docType" style="font-size:14px;"></label>
+                    </td>
+                </tr>
+                <tr style="height:40px;">
+                    <th colspan="3" align="left" style="font-size:16px;font-weight:normal;">
+                        文書タイトル
+                    </th>
+                    <td>
+                        <label id="docTitle" style="font-size:14px;"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="3" align="left" style="width:150px;font-size:16px;font-weight:normal;">
+                        登録対象社員名
+                    </th>
+                    <td colspan="3" style="width:300px;height:35px;">
+                        <label style="font-size:14px;margin-left:5px;" id="targetEmplName"></label>
+                    </td>
+                </tr>
+                <tr style="height:40px;">
+                    <th colspan="3" align="left" style="font-size:16px;font-weight: normal;">
+                        文書ファイル
+                    </th>
+                    <td>
+                        <label id="fileName" style="font-size:14px;"></label>
+                    </td>
+                </tr>
+                <tr style="height:60px;">
+                    <th colspan="3" align="left" style="font-size:16px;font-weight: normal;">
+                        有効期限
+                    </th>
+                    <td>
+                        <label id="dateFromTo" style="font-size:14px;"></label>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <button class="c-button" style="font-size:14px;width:180px;margin: 10px 0px 0px 400px;" id="closeBtn">
+                閉じる
+            </button>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

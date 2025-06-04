@@ -28,6 +28,8 @@ import struct.SendReciveTranKeyInfo;
 @WebServlet("/SelectDocumentInfoServlet")
 public class SelectDocumentInfoServlet extends BaseServlet implements CommonTableAccessIF {
 	private static final long serialVersionUID = 1L;
+	
+	
     
     /**
      * @see HttpServlet#HttpServlet()
@@ -50,129 +52,164 @@ public class SelectDocumentInfoServlet extends BaseServlet implements CommonTabl
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
-		if (!postParamSelectCheck(request)) {
-	        String jsonStr = josnWrite("0", null);
-	        postOut(jsonStr, response);
-	        return;
-	    }
+		if (postParamSearchCheck(request)) {
+	       
+	    
 
 	        CommonTableAccessIF sendRDao = new SendReciveTranDao();
 	        CommonTableAccessIF sendRDtlDao = new SendReciveDetailTranDao();
 	        CommonTableAccessIF docDao = new DocBodyDao();
+	        StringBuilder docTitle = new StringBuilder();
+	        StringBuilder expirationFrom = new StringBuilder();
+	        StringBuilder expirationTo = new StringBuilder();
 
 
-	        DocBodyDto docDto = mainProc(request, sendRDao, sendRDtlDao, docDao);
-	        int rtnCode = (docDto == null) ? 0 : 1;
-	        String jsonStr = josnWrite(rtnCode, docDto);
-	        postOut(josnWrite(rtnCode, docDto), response);
+	        int ret = mainProc(request, sendRDao, sendRDtlDao, docDao, docTitle, expirationFrom, expirationTo);
+	        
+	      //JSON形式変換
+	    	String JsonStr = "";
+	    	JsonStr = josnWrite(ret, docTitle.toString(), expirationFrom.toString(), expirationTo.toString());
+	        
+	      //レスポンスを出力
+	        postOut(JsonStr, response);
 	    }
+	}
 	    
-
+		/**
+		 * 主処理
+		 * パラメータをチェックしキー項目が空でな場合データ取得処理を行う
+		 * 戻り値：1:取得完了,0:取得未完了,-1:パラメータチェックエラー,
+		 */
 	    private int mainProc(HttpServletRequest request,
-	                         CommonTableAccessIF sendRDao,
-	                         CommonTableAccessIF sendRDtlDao,
-	                         CommonTableAccessIF docDao) {
+                CommonTableAccessIF sendRDao,
+                CommonTableAccessIF sendRDtlDao,
+                CommonTableAccessIF docDao,
+                StringBuilder docTitleOut,
+                StringBuilder expirationFromOut,
+                StringBuilder expirationToOut) {
+	    	
+	    	int ret = 1;
 
-	        String send_recive_type = nvl(request.getParameter("send_recive_type"));
-	        String year_month = nvl(request.getParameter("year_month"));
-	        String empl_code = nvl(request.getParameter("empl_code"));
-	        String doc_name = nvl(request.getParameter("doc_name"));
-	        String doc_type = nvl(request.getParameter("doc_type"));
+	    	String send_recive_type = "";
+	    	if (request.getParameter("send_recive_type") != null) {
+	    	    send_recive_type = request.getParameter("send_recive_type");
+	    	}
 
-	        if (send_recive_type.isEmpty() || year_month.isEmpty() || empl_code.isEmpty()
-	                || doc_name.isEmpty() || doc_type.isEmpty()) {
-	            return null;
-	        }
+	    	String year_month = "";
+	    	if (request.getParameter("year_month") != null) {
+	    	    year_month = request.getParameter("year_month");
+	    	}
 
-	        Connection con = null;
+	    	String empl_code = "";
+	    	if (request.getParameter("empl_code") != null) {
+	    	    empl_code = request.getParameter("empl_code");
+	    	}
 
-	        try {
-	        	con = getConn();
+	    	String doc_name = "";
+	    	if (request.getParameter("doc_name") != null) {
+	    	    doc_name = request.getParameter("doc_name");
+	    	}
+
+	    	String doc_type = "";
+	    	if (request.getParameter("doc_type") != null) {
+	    	    doc_type = request.getParameter("doc_type");
+	    	}
+
+	    	// 必須項目チェック（キー項目）
+	    	if ("".equals(send_recive_type) || "".equals(year_month) || "".equals(empl_code)
+	    	        || "".equals(doc_name) || "".equals(doc_type)) {
+	    	    return -1;  
+	    	}
+
+
+	    	//更新トランザクション用にDBコネクションを用意
+			Connection con = getConn();
+
+	        
 	        	
 	            // 送受信トラン取得
-	            SendReciveTranKeyInfo srKey = new SendReciveTranKeyInfo();
-	            srKey.setSend_recive_type(send_recive_type);
-	            srKey.setYear_month(year_month);
-	            srKey.setEmpl_code(empl_code);
-	            sendRDao.setParam(srKey);
+	            SendReciveTranKeyInfo srKeyParm = new SendReciveTranKeyInfo();
+	            srKeyParm.setSend_recive_type(send_recive_type);
+	            srKeyParm.setYear_month(year_month);
+	            srKeyParm.setEmpl_code(empl_code);
+	            sendRDao.setParam(srKeyParm);
 	            SendReciveTranDto srDto = (SendReciveTranDto) sendRDao.selectDataByKey(con);
 
 	            // 明細トラン取得
-	            SendReciveDetailTranKeyInfo srDtlKey = new SendReciveDetailTranKeyInfo();
-	            srDtlKey.setSend_recive_type(send_recive_type);
-	            srDtlKey.setYear_month(year_month);
-	            srDtlKey.setEmpl_code(empl_code);
-	            srDtlKey.setDoc_name(doc_name);
-	            srDtlKey.setDoc_type(doc_type);
-	            sendRDtlDao.setParam(srDtlKey);
-	            SendReciveDetailTranDto srDtlDto = (SendReciveDetailTranDto) sendRDtlDao.selectDataByKey(con);
+	            SendReciveDetailTranKeyInfo srdKeyParm = new SendReciveDetailTranKeyInfo();
+	            srdKeyParm.setSend_recive_type(send_recive_type);
+	            srdKeyParm.setYear_month(year_month);
+	            srdKeyParm.setEmpl_code(empl_code);
+	            srdKeyParm.setDoc_name(doc_name);
+	            srdKeyParm.setDoc_type(doc_type);
+	            sendRDtlDao.setParam(srdKeyParm);
+	            SendReciveDetailTranDto srdDto = (SendReciveDetailTranDto) sendRDtlDao.selectDataByKey(con);
 
 	            // 文書内容取得
-	            DocBodyKeyInfo docKey = new DocBodyKeyInfo();
-	            docKey.setSend_recive_type(send_recive_type);
-	            docKey.setYear_month(year_month);
-	            docKey.setEmpl_code(empl_code);
-	            docKey.setDoc_name(doc_name);
-	            docKey.setDoc_type(doc_type);
-	            docDao.setParam(docKey);
+	            DocBodyKeyInfo docKeyParm = new DocBodyKeyInfo();
+	            docKeyParm.setSend_recive_type(send_recive_type);
+	            docKeyParm.setYear_month(year_month);
+	            docKeyParm.setEmpl_code(empl_code);
+	            docKeyParm.setDoc_name(doc_name);
+	            docKeyParm.setDoc_type(doc_type);
+	            docDao.setParam(docKeyParm);
 	            DocBodyDto docDto = (DocBodyDto) docDao.selectDataByKey(con);
-
-	            // 必須データがすべて存在するかチェック
-	            if (srDto.getEmpl_code() == null || srDtlDto.getEmpl_code() == null || docDto.getEmpl_code() == null) {
-	                return null;  // データなし
-	            }
-
-	            // 必要な属性を設定（使ってないなら削除してもよい）
-	            request.setAttribute("docTitle", docDto.getDoc_title());
-	            request.setAttribute("dateFrom", docDto.getExpiration_from_dateTime());
-	            request.setAttribute("dateTo", docDto.getExpiration_to_dateTime());
-
-	            return docDto;
-
 	            
-	        } catch (Exception e) {
-	            logger.error("文書閲覧情報取得中にエラー", e);
 	            try {
-	                if (con != null) con.rollback();
-	            } catch (SQLException rollbackEx) {
-	                logger.error("ロールバックエラー", rollbackEx);
+	            // 必須データがすべて存在するかチェック
+	            if (srDto.getEmpl_code() == null || srdDto.getEmpl_code() == null || docDto.getEmpl_code() == null) {
+	                return -1;  // データなし
 	            }
-	            return null;
-	        } finally {
-	            try {
-	                if (con != null) con.close();
-	            } catch (SQLException closeEx) {
-	                logger.error("コネクションクローズ失敗", closeEx);
+	            // 取得結果を引数で渡されたStringBuilderに格納
+	            docTitleOut.append(docDto.getDoc_title() != null ? docDto.getDoc_title() : "");
+	            expirationFromOut.append(docDto.getExpiration_from_dateTime() != null ? docDto.getExpiration_from_dateTime() : "");
+	            expirationToOut.append(docDto.getExpiration_to_dateTime() != null ? docDto.getExpiration_to_dateTime() : "");
+
+	            // ----------------------------
+	            // 文書データの取得（キー項目5つが全て揃っている場合）
+	            // ----------------------------
+	            if (doc_name != null && doc_name.length() > 0 && doc_type != null && doc_type.length() > 0) {
+	                DocBodyKeyInfo keyDoc = new DocBodyKeyInfo();
+	                keyDoc.setSend_recive_type(send_recive_type);
+	                keyDoc.setYear_month(year_month);
+	                keyDoc.setEmpl_code(empl_code);
+	                keyDoc.setDoc_name(doc_name);
+	                keyDoc.setDoc_type(doc_type);
+
+	                docDao.setParam(keyDoc);  // paramKeyInfo にキーをセット
+	                ret = 1;
+
+	                if (ret < 1) {
+	                	//完了でない場合はエラー
+	                	con.rollback();
+	                	logger.error("DocBody select エラー：" + Integer.toString(ret));
+	                	return ret;
+	                }
 	            }
-	        }
-	    }
+	            con.commit();
+	         }catch (SQLException e) {
+	             if (con != null) try { con.rollback(); } catch (SQLException ignored) {}
+	             ret = -1;
+	             logger.error("DB処理エラー", e);
+	         } finally {
+	             if (con != null) try { con.close(); } catch (SQLException ignored) {}
+	         }
 
-	    // パラメータチェック
-	    private boolean postParamSelectCheck(HttpServletRequest request) {
-	        return request.getParameter("send_recive_type") != null &&
-	               request.getParameter("year_month") != null &&
-	               request.getParameter("empl_code") != null &&
-	               request.getParameter("doc_name") != null &&
-	               request.getParameter("doc_type") != null;
-	    }
+	         return ret;
+	     }
+	    
 
-	    // null を "" に置換するユーティリティ
-	    private String nvl(String val) {
-	        return (val == null) ? "" : val;
-	    }
+	    private String josnWrite(int retCode, String docTitle, String expirationFrom, String expirationTo) {
+	        docTitle = docTitle == null ? "" : docTitle.replace("\"", "\\\"");
+	        expirationFrom = expirationFrom == null ? "" : expirationFrom.replace("\"", "\\\"");
+	        expirationTo = expirationTo == null ? "" : expirationTo.replace("\"", "\\\"");
 
-	    private String josnWrite(int ret, DocBodyDto docDto) {
-	        StringBuilder sb = new StringBuilder();
-	        sb.append("{");
-	        sb.append("\"result\": ").append(ret);
-	        if (ret == 1 && docDto != null) {
-	            sb.append(", ");
-	            sb.append("\"doc_title\": \"").append(docDto.getDoc_title()).append("\", ");
-	            sb.append("\"expiration_from\": \"").append(docDto.getExpiration_from_dateTime()).append("\", ");
-	            sb.append("\"expiration_to\": \"").append(docDto.getExpiration_to_dateTime()).append("\"");
-	        }
-	        sb.append("}");
-	        return sb.toString();
+	        String retVal = Integer.toString(retCode);
+	        String json = String.format(
+	            "{\"rtn_code\":\"%s\", \"doc_title\":\"%s\", \"expiration_from_dateTime\":\"%s\", \"expiration_to_dateTime\":\"%s\"}",
+	            retVal, docTitle, expirationFrom, expirationTo
+	        );
+	        return "[" + json + "]";
 	    }
 	    
 	    
