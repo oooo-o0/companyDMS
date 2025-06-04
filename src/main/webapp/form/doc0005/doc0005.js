@@ -224,7 +224,7 @@ function subInsert() {
 		// 年月
 		year_month : String($("#targetYm").text()).replace("/",""),
 		// 社員コード
-		empl_code : emplInfoArray[0],
+		empl_code : c,
 		// 文書名(最終登録文書/文書)
 		doc_name : String($("#file_select_text").val()),
 		// 操作区分
