@@ -18,25 +18,25 @@
 
 </head>
 
-<!--<body style="background-color:#E2EFDA;margin: 0px;padding: 0px;">-->
+
 
 <body style="margin: 30px;padding: 0px;">
 
-	<!-- エラーメッセージ  -->
-	<div id="message"></div>
-
-	<!--	<table style="background-color:#F2F2F2; border:none;border-collapse:collapse;">-->
-
-	<table style="border: none;border-collapse: collapse;">
-		<tr>
-			<td colspan="3" style="background-color: #DDEBF7;width: 1050px;height: 30px;">
-				<label style="background-color: #DDEBF7;font-size: 16px;margin: 0px 0px 0px 360px;"
-					for="name1">文書登録</label>
-				<label style="background-color: #DDEBF7;font-size: 16px;margin: 0px 0px 0px 50px;"
-					for="name1">新規登録</label>
-			</td>
-			<td style="width: 600px;"></td>
-		</tr>
+<!-- エラーメッセージ  -->
+<div id="message"></div>
+<form id="uploadForm" method="POST" enctype="multipart/form-data">
+	<table style="border:none;border-collapse:collapse;">
+	    <tr>
+    		<td colspan="3" style="background-color:#DDEBF7;width:1050px;height:30px;">
+				<label style="background-color:#DDEBF7;font-size:16px;margin: 0px  0px 0px 360px;" for="name1">
+					文書登録
+				</label>
+				<label style="background-color:#DDEBF7;font-size:16px;margin: 0px  0px 0px 50px;" for="name1">
+					新規登録
+				</label>
+    		</td>
+	    	<td style="width:600px;"></td>
+    	</tr>
 		<tr>
 			<td>
 				<table style="border:none;width:1050px;">
@@ -50,7 +50,6 @@
 				</table>
 			</td>
 		</tr>
-		<tr>
 		<tr>
 			<td>
 				<table style="border:none;margin: 0px  0px 0px 100px;">
@@ -71,7 +70,7 @@
       					</th>
       					<td>
       						<select id="docTypeSelectList" style="height:25px;">
-		   						<option selected disabled hidden>
+		   						<option selected disabled>
   		  					 	</option>
 		  					</select>
 						</td>
@@ -81,7 +80,7 @@
       						文書タイトル
       					</th>
       					<td>
-      						<input type="text" id="doctitil" size="80" maxlength="78"/>
+      						<input type="text" id="docTitle" size="80" maxlength="78"/>
       					</td>
     				</tr>
 					<tr>
@@ -100,7 +99,7 @@
 							<input type="text" id="file_select_text" size="35" readonly/>
  							<span class="originalFileBtn ">
  								参照
-  								<input type="file" id="fileSelectBtn"/>
+  								<input type="file" name="upfile" id="fileSelectBtn"/>
  							</span>
 						</td>
 					</tr>
@@ -109,8 +108,8 @@
       						有効期限
       					</th>
       					<td>
-      						<input style="font-size:14px;font-weight:bold;width:130px;" id="dateFrom" type="date"/>-
-      						<input style="font-size:14px;font-weight:bold;width:130px;" id="dateTo" type="date"/>
+      						<input style="font-size:14px;font-weight:bold;width:135px;" id="dateFrom" type="date"/>-
+      						<input style="font-size:14px;font-weight:bold;width:135px;" id="dateTo" type="date"/>
 						</td>
     				</tr>
 				</table>
@@ -124,5 +123,6 @@
 			</td>
 		</tr>
 	</table>
+</form>
 </body>
 </html>

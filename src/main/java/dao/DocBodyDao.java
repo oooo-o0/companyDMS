@@ -10,18 +10,17 @@
  */
 package dao;
 
-import interfe.CommonTableAccessIF;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import base.BaseServlet;
+import dto.DocBodyDto;
+import interfe.CommonTableAccessIF;
 import struct.DocBodyKeyInfo;
 import struct.DocBodySetInfo;
 import struct.UpdateInfo;
-import base.BaseServlet;
-import dto.DocBodyDto;
 
 /**
  * @author D.Ikeda
@@ -360,13 +359,16 @@ public class DocBodyDao extends BaseServlet implements CommonTableAccessIF {
 		String send_recive_type = paramKeyInfo.getSend_recive_type();
 		String year_month = paramKeyInfo.getYear_month();
 		String empl_code = paramKeyInfo.getEmpl_code();
+		String doc_name = paramKeyInfo.getDoc_name();
+		String doc_type = paramKeyInfo.getDoc_type();
+
 
 	   	Connection selfCon = null;
 	   	PreparedStatement stm = null;
 	    int rs = 0;
 
-		String selectSql = "DELETE FROM doc.DocBody"
-				+ "WHERE send_recive_type = ? AND year_month = ? AND empl_code = ? ";
+		String selectSql = "DELETE FROM doc.DocBody "
+				+ "WHERE send_recive_type = ? AND year_month = ? AND empl_code = ? AND doc_name = ? AND doc_type = ? ";
 
 	    if (execTranFlag !=0 ) {
 	    	selfCon = getConn();
@@ -382,6 +384,9 @@ public class DocBodyDao extends BaseServlet implements CommonTableAccessIF {
 				stm.setString(1, send_recive_type);
 				stm.setString(2, year_month);
 				stm.setString(3, empl_code);
+				stm.setString(4, doc_name);
+				stm.setString(5, doc_type);
+
 			    logger.info(selectSql);
 			    rs = stm.executeUpdate();
 

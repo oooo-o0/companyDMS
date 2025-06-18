@@ -1,7 +1,5 @@
 package servlet;
 
-import interfe.CommonTableAccessIF;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,10 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import struct.SendReciveDetailTranKeyInfo;
-import struct.SendReciveTranKeyInfo;
-import struct.SendReciveTranSetInfo;
-import struct.UpdateInfo;
 import base.BaseServlet;
 import dao.DocBodyDao;
 import dao.SendReciveDetailTranDao;
@@ -22,6 +16,11 @@ import dao.SendReciveTranDao;
 import dto.DocBodyDto;
 import dto.SendReciveDetailTranDto;
 import dto.SendReciveTranDto;
+import interfe.CommonTableAccessIF;
+import struct.SendReciveDetailTranKeyInfo;
+import struct.SendReciveTranKeyInfo;
+import struct.SendReciveTranSetInfo;
+import struct.UpdateInfo;
 
 /**
  * Servlet implementation class InsertSendReciveTranServlet
@@ -526,3 +525,4 @@ public class InsertSendReciveTranServlet extends BaseServlet implements CommonTa
 	}
 
 }
+

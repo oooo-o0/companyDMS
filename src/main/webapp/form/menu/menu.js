@@ -1092,11 +1092,10 @@ $(function() {
 	//画面遷移処理
 	function subBtn5b_After(parm_ym17, parm_empl_code21) {
 
-		var screenId ="doc0005b";
 		var ym17 = parm_ym17.replace("-","");
 		var emplCode = parm_empl_code21;
 		var url = "http://localhost:8080/ibiDoc/form/doc0005b/doc0005b.html";
-		url +="?sid=" + screenId + "?ym=" + ym17 + "?ecd=" + emplCode;
+		url +="?ym=" + ym17 + "?ecd=" + emplCode;
 
 		//新しいウィンドウで表示
 		window.open(url);

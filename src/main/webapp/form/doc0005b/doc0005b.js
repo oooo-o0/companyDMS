@@ -1,209 +1,221 @@
 /**
  * doc0005b.js
  * 文書登録（管理者用）
- * @author D.Ikeda
- *    Date:2025/05/15
+ * @author A.T
+ *    Date:2025/06/01
  * @version 1.0.0
  *
  */
 
-//グローバル変数
-var strYyyyMm = "";      // 年月の保存用
-var userInfoArray = [];  // ログインユーザー情報
-var emplInfoArray = [];  // 対象社員情報
-var selectDocType = "";  // 選択した文書分類コード
-var selectDocText;       // 選択した文書分類名
-var filesData;           // アップロードするファイルのデータ
+//年月
+var strYyyyMm = "";
 
-$(function(){
-	//エラーメッセージダイアログを定義
+var userInfoArray = [];
+
+var emplInfoArray = [];
+
+var selectDocType = "";
+
+var filesData;
+
+var selectDocText;
+
+$(function() {
+	/* *********************************************
+	 *エラーメッセージダイアログを定義
+	 ********************************************** */
 	$("#message").dialog({
-		autoOpen:false,
-		modal:true,
-		title:"エラーメッセージ",
-		width:400,
-		height:200,
-		buttons:[
-			{
-				text:'OK',
-				class:'d-button',
-				click:function(){
-					//ボタンを押したときの処理
-					$(this).dialog("close");
-				}
-			}
-		]
+	    autoOpen: false,
+	    modal: true,
+	    title: "エラーメッセージ",
+	    width: 400,
+	    height: 200,
+	    buttons: [
+	    	{
+	            text: 'OK',
+	            class:'d-button',
+	            click: function() {
+	                //ボタンを押したときの処理
+	            	$(this).dialog("close");
+	            }
+	        }
+	    ]
 	});
 });
 
-
-//処理メッセージ表示
-function displayMessage(str){
+/* *********************************************
+ *処理メッセージ表示
+ ********************************************** */
+function displayMessage(str) {
 	$('#message').empty();
 	$('#message').append("<p>" + str + "</p>");
-	$('#message').dialog("open");
+	$("#message").dialog("open");
 	return false;
 }
 
-//画面の準備
+/* *********************************************
+*画面の準備
+********************************************** */
 $(document).ready(function(){
 
 	userInfoArray = init("");
 
 	docInit();
- 	
- 	//ファイルアップロードボタンの選択イベント設定
+
+	//ファイルアップロードボタンの選択イベント設定
 	$("#fileSelectBtn").change(function(){
 		var filePath = $(this).prop('files')[0].name;
 		filesData = $(this).prop('files')[0];
 		$("#file_select_text").val(filePath);
-		$(this).val("");
 	});
-	
-	//文書分類セレクトボックスの選択イベント設定
- 	$("#docTypeSelectList").change(function(){
-	    subChange();
- 	});
- 	
- 	//有効期限開始日の選択イベント設定
- 	$("#dateFrom").change(function(){
+
+	// 文書分類セレクトボックス変更イベント
+	$("#docTypeSelectList").change(function(){
+		subChange();
+	});
+
+	// 有効期限開始日選択時の処理
+	$("#dateFrom").change(function(){
 		var selectDateFrom = $(this).val();
-		//有効期限終了日の最小値を行こう期限開始日の値に変更する
 		document.getElementById("dateTo").min = selectDateFrom;
-	 });
-	 
-	 //登録ボタンのイベント設定
-	 $("#insertBtn").click(function() {
-		 subInsert();
-	 });
+	});
+
+	// 登録ボタンイベント（form送信防止）
+	$("#insertBtn").click(function(e){
+		e.preventDefault();  // フォームの送信を防ぐ
+	    subInsert();
+ 	});
 });
 
+
+/* *********************************************
+*文書分類セレクトボックスの選択イベント処理
+********************************************** */
 function subChange() {
 
-	 //selectrdArray = [];
 	 //選択文書分類の名称コード
-     selectDocType = $('option:selected').val();
-     
-     //年月と選択文字で文書タイトルを自動セット
+	 selectDocType = $('option:selected').val();
+
+	//年月と選択文字で文書タイトルを自動セット
      selectDocText = $('option:selected').text();
      var nengetu = $("#targetYm").text();
-     var titleYm = String(nengetu).substring(0,4) + "年" + String(nengetu).substring(5,7) + "月";
-     $("#doctitil").val(titleYm + selectDocText);
-     //selectrdArray = strVal.split(",");
+     var titleYm = String(nengetu).substring(0,4) + "年"+ String(nengetu).substring(5,7) + "月";
+     $("#docTitle").val(titleYm + selectDocText);
 
 }
 
-//初期処理
+/* *********************************************
+*初期処理
+********************************************** */
 function docInit() {
-	// ユーザー情報配列の2番目からユーザー名を取得
-	var emplName = userInfoArray[1];
-	// ID「useName」の要素に取得したユーザー名を表示（jQueryを使用）
-	$("#useName").text(emplName);
-	
-	return;
 
+	var emplName = userInfoArray[1];
+	$("#useName").text(emplName);
+
+	return;
 }
 
-//画面の初期ロード
+/* *********************************************
+* 画面の初期ロード
+********************************************** */
 $(window).on('load',function(){
-	
+
 	//起動パラメータ取得
 	var parm = $(location).attr('search');
-	//var parm =location.seach;
 	var parmArray = [];
 	var parmArray = String(parm).split("?");
-	
+
 	//年月の初期処理
-	monthInit(parmArray[2]);
+	monthInit(parmArray[1]);
 	//社員名の初期処理
-	emplInit(parmArray[3]);
+	emplInit(parmArray[2]);
 	//有効期限
 	expiration();
 	//文書分類
-	selectBox();
-	
-	/**
-	 * 年月に初期値をセット
-	 */
-	function monthInit(ym){
-		var nengetu = ym.substring(3, 7) + "/" + ym.substring(7, 9);
-		$("#targetYm").text(nengetu);
-	}
-	/**
-	 * 社員名に初期値をセット
-	 */
-	function emplInit(emplCode){
-		var empl_code = String(emplCode);
-		emplInfoArray = getEmplMstInfo(empl_code.substring(4, empl_code.length));
-		
-		$("#targetEmplName").text(emplInfoArray[1]);
-	}
-	/**
-	 * 有効期限に初期値をセット
-	 */
-	function expiration(){
-		/* 有効期限開始日  */
-		//当日を取得
-		var toDay = toDayVal();
-		//1日加算する
-		var addDay = addDayVal(toDay, 1);
-		
-		$("#dateFrom").val(addDay);
-		//有効期限開始日の最小値を当日にする
-		document.getElementById("dateFrom").min = toDay;
-		
-		/**
-		 * 有効期限終了日
-		 */
-		// システムプロパティから保存期間（月数）を取得
-		var numMonth = Number(getProperties("retention"));
-		//保存期間（月数）を加算する
-		var addMonthDay = addMonthVal(addDay, numMonth);
-		$("#dateTo").val(addMonthDay);
-		// 有効期限終了日の最小値を有効期限開始日の値にする
-		document.getElementById("dateTo").min = addDay;
-	}
-	/**
-	 * セレクトボックスの初期処理
-	 */
-	function selectBox() {
-		//名称マスタの一覧を取得
-		var nameValue = getNameMst("doc_type","1","");
-		
-		$.each(nameValue, function( key, value ){
-			$("#docTypeSelectList").append($("<option>").val(String(value.key)).text(String(value.value)));
-		});
-	}
+	selectBox()
 });
 
+/* *********************************************
+* 年月に初期値をセット
+********************************************** */
+function monthInit(ym) {
 
+	var nengetu = ym.substring(3, 7) + "/" + ym.substring(7, 9);
 
+	$("#targetYm").text(nengetu);
 
-//操作ボタン：文書登録のイベント
-$(document).on('click', '.operation_btn01' , function() {
-	var ym3 = strYyyyMm.replace("-","");
-	var emplCode = $(this).closest('tr').find('input[name=emplCode]').val();
-	var url = "http://localhost:8080/ibiDoc/form/doc0005b/doc0005b.html";
-	url += "?ym=" + ym3 + "?ecd=" + emplCode;
+}
 
-	//新しいウィンドウで表示
-	window.open(url);
-});
+/* *********************************************
+* 社員名に初期値をセット
+********************************************** */
+function emplInit(emplCode) {
+	var empl_code = String(emplCode);
 
-//登録処理
-function subInsert(){
+	emplInfoArray = getEmplMstInfo(empl_code.substring(4, empl_code.length));
+
+	$("#targetEmplName").text(emplInfoArray[1]);
+
+}
+
+/* *********************************************
+* 有効期限に初期値をセット
+********************************************** */
+function expiration() {
+	/* 有効期限開始日 */
+	//当日を取得
+	var toDay = toDayVal();
+	//1日加算する
+	var addDay = addDayVal(toDay, 1);
+
+	$("#dateFrom").val(addDay);
+	//有効期限開始日の最小値を当日にする
+	document.getElementById("dateFrom").min = toDay;
+
+	/* 有効期限終了日 */
+	//システムプロパティから保存期間（月数）を取得
+	var numMonth = Number(getProperties("retention"));
+	//保存期間（月数）を加算する
+	var addMonthDay = addMonthVal(addDay, numMonth);
+
+	$("#dateTo").val(addMonthDay);
+	//有効期限終了日の最小値を有効期限開始日の値にする
+	document.getElementById("dateTo").min = addDay;
+
+}
+
+/* *********************************************
+*セレクトボックスの初期設定
+********************************************** */
+function selectBox() {
+	//名称マスタの一覧を取得
+	var nameValue = getNameMst("doc_type","1","");
+
+	$.each( nameValue, function( key, value ){
+	    $("#docTypeSelectList").append($("<option>").val(String(value.key)).text(String(value.value)));
+    });
+
+}
+
+/* *********************************************
+*登録処理
+********************************************** */
+function subInsert() {
+
 	//入力エラーチェックを行う
-	if (!inputCheck()){
-		//入力チェックエラーの場合は処理を抜ける
+	if (!inputCheck()) {
+	//入力チェックエラーの場合は処理を抜ける
 		return;
 	}
+
 	//チェックエラーでない場合は登録処理を実施
 	var url = "http://localhost:8080/ibiDoc/InsertSendReciveTranServlet?ACTION=";
-	var action = "insert";
-	
+	   var action = "insert";
+
 	url += action;
-	
+
 	var dTime = nowTimeVal();
+
 	var senddata = {
 		/*  送受信トラン  */
 		// 送受信区分
@@ -247,7 +259,7 @@ function subInsert(){
 
 	    /*  文書内容  */
 	    // タイトル
-	    doc_title : String($("#doctitil").val()),
+	    doc_title : String($("#docTitle").val()),
 	    // 内容
 	    doc_body : "",
 	    // 有効期限(開始)
@@ -256,8 +268,9 @@ function subInsert(){
 	    expiration_to_dateTime : String($("#dateTo").val()).replaceAll("-",""),
 	    // メール送信日時/受信日時
 	    mail_send_recive_dateTime : ""
-	};
-	
+
+    };
+
 	//ajax通信
 	var jqXHR = postSeatchSync(senddata,url);
 
@@ -279,44 +292,65 @@ function subInsert(){
 	    	displayMessage(getMsg("msg0005_005"));
 	    }
 	}
+
 }
 
-function showData(jqXHR){
-	var ret = "";
-	jqXHR.done(function(data, stat, xhr){
-		//結果を表示
-		$.each( data, function( key, value ){
-			ret = String(value.rtn_code);
+/* *********************************************
+*登録結果を取得
+********************************************** */
+function showData(jqXHR) {
+		var ret = "";
+		jqXHR.done(function(data, stat, xhr) {
+			//結果を表示
+			$.each( data, function( key, value ){
+				ret = String(value.rtn_code);
+		    });
 		});
-	});
-	
+
 	return ret;
 }
 
-//入力チェック処理
+/* *********************************************
+*入力チェック処理
+********************************************** */
 var inputCheck = function() {
 	var ret = true;
+
 	//文書分類に値が入っているか？
 	if (isBlank($('#docTypeSelectList> option:selected').val())) {
 		//エラー"文書分類は必須です。"
 		displayMessage(getMsg("msg0005_001"));
 		return false;
 	}
+
 	//文書タイトルに値が入っているか？
-	if (isBlank($('#doctitil').val())) {
+	if (isBlank($('#docTitle').val())) {
 		//エラー"文書タイトルは必須です。"
 		displayMessage(getMsg("msg0005_002"));
 		return false;
 	}
+
 	//文書ファイルに値が入っているか？
 	if (isBlank($('#file_select_text').val())) {
-		//エラー"記号は必須です。"
+		//エラー"文書ファイルは必須です。"
 		displayMessage(getMsg("msg0005_003"));
 		return false;
 	}
+
+	//有効期限の大小チェック
+	var strDate = String($("#dateFrom").val());
+	var strDate2 = String($("#dateTo").val());
+	var date = new Date(String(strDate).substring(0,4), String(strDate).substring(5,7), String(strDate).substring(8,10));
+	var date2 = new Date(String(strDate2).substring(0,4), String(strDate2).substring(5,7), String(strDate2).substring(8,10));
+
+	if (date.getTime() > date2.getTime()) {
+		//エラー"有効期限の開始日が終了日を上回っています。"
+		displayMessage(getMsg("msg0005_011"));
+		return false;
+	}
+
 	return ret;
 }
-
 
 /* *********************************************
 *アップロード処理
@@ -343,7 +377,7 @@ function subUpload() {
     url += emplInfoArray[0];
     url += "&DT=";
     url += docTypeName;
-
+    
     var fd = new FormData();
     fd.append("upfile", filesData);
 

@@ -359,13 +359,16 @@ public class SendReciveDetailTranDao extends BaseServlet implements CommonTableA
 		String send_recive_type = paramKeyInfo.getSend_recive_type();
 		String year_month = paramKeyInfo.getYear_month();
 		String empl_code = paramKeyInfo.getEmpl_code();
+		String doc_name = paramKeyInfo.getDoc_name();
+		String doc_type = paramKeyInfo.getDoc_type();
+
 
 	   	Connection selfCon = null;
 	   	PreparedStatement stm = null;
 	    int rs = 0;
 
 		String selectSql = "DELETE FROM doc.SendReciveDetailTran "
-						+ "WHERE send_recive_type = ? AND year_month = ? AND empl_code = ? ";
+						+ "WHERE send_recive_type = ? AND year_month = ? AND empl_code = ? AND doc_name = ? AND doc_type = ? ";
 
 	    if (execTranFlag !=0 ) {
 	    	selfCon = getConn();
@@ -381,6 +384,9 @@ public class SendReciveDetailTranDao extends BaseServlet implements CommonTableA
 				stm.setString(1, send_recive_type);
 				stm.setString(2, year_month);
 				stm.setString(3, empl_code);
+				stm.setString(4, doc_name);
+				stm.setString(5, doc_type);
+
 			    logger.info(selectSql);
 			    rs = stm.executeUpdate();
 

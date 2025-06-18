@@ -67,27 +67,26 @@ $(document).ready(function(){
 		var filePath = $(this).prop('files')[0].name;
 		filesData = $(this).prop('files')[0];
 		$("#file_select_text").val(filePath);
-		$(this).val("");
 	});
 
-	//文書分類セレクトボックスの選択イベント設定
+	// 文書分類セレクトボックス変更イベント
 	$("#docTypeSelectList").change(function(){
 		subChange();
 	});
 
-	//有効期限開始日の選択イベント設定
+	// 有効期限開始日選択時の処理
 	$("#dateFrom").change(function(){
 		var selectDateFrom = $(this).val();
-		//有効期限終了日の最小値を有効期限開始日の値に変更する
 		document.getElementById("dateTo").min = selectDateFrom;
 	});
 
-	//登録ボタンのイベント設定
-    $("#insertBtn").click(function(){
+	// 登録ボタンイベント（form送信防止）
+	$("#insertBtn").click(function(e){
+		e.preventDefault();  // フォームの送信を防ぐ
 	    subInsert();
  	});
-
 });
+
 
 /* *********************************************
 *文書分類セレクトボックスの選択イベント処理
@@ -224,7 +223,7 @@ function subInsert() {
 		// 年月
 		year_month : String($("#targetYm").text()).replace("/",""),
 		// 社員コード
-		empl_code : c,
+		empl_code : emplInfoArray[0],
 		// 文書名(最終登録文書/文書)
 		doc_name : String($("#file_select_text").val()),
 		// 操作区分
@@ -378,7 +377,7 @@ function subUpload() {
     url += emplInfoArray[0];
     url += "&DT=";
     url += docTypeName;
-
+    
     var fd = new FormData();
     fd.append("upfile", filesData);
 
