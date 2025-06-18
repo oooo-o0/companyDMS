@@ -165,35 +165,15 @@ public class SelectDocumentInfoServlet extends BaseServlet implements CommonTabl
 	            expirationFromOut.append(docDto.getExpiration_from_dateTime() != null ? docDto.getExpiration_from_dateTime() : "");
 	            expirationToOut.append(docDto.getExpiration_to_dateTime() != null ? docDto.getExpiration_to_dateTime() : "");
 
-	            // ----------------------------
-	            // 文書データの取得（キー項目5つが全て揃っている場合）
-	            // ----------------------------
-	            if (doc_name != null && doc_name.length() > 0 && doc_type != null && doc_type.length() > 0) {
-	                DocBodyKeyInfo keyDoc = new DocBodyKeyInfo();
-	                keyDoc.setSend_recive_type(send_recive_type);
-	                keyDoc.setYear_month(year_month);
-	                keyDoc.setEmpl_code(empl_code);
-	                keyDoc.setDoc_name(doc_name);
-	                keyDoc.setDoc_type(doc_type);
-
-	                docDao.setParam(keyDoc);  // paramKeyInfo にキーをセット
-	                ret = 1;
-
-	                if (ret < 1) {
-	                	//完了でない場合はエラー
-	                	con.rollback();
-	                	logger.error("DocBody select エラー：" + Integer.toString(ret));
-	                	return ret;
-	                }
-	            }
 	            con.commit();
-	         }catch (SQLException e) {
-	             if (con != null) try { con.rollback(); } catch (SQLException ignored) {}
-	             ret = -1;
-	             logger.error("DB処理エラー", e);
-	         } finally {
-	             if (con != null) try { con.close(); } catch (SQLException ignored) {}
-	         }
+	            } catch (SQLException e) {
+	                if (con != null) try { con.rollback(); } catch (SQLException ignored) {}
+	                ret = -1;
+	                logger.error("DB処理エラー", e);
+	            } finally {
+	                if (con != null) try { con.close(); } catch (SQLException ignored) {}
+	            }
+
 
 	         return ret;
 	     }
