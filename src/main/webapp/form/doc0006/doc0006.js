@@ -1,8 +1,8 @@
 /**
  * doc0006.js
  * 文書閲覧（管理者用）
- * @author D.Ikeda
- *    Date:2021/05/03
+ * @author A.Tomita
+ *    Date:2025/06/09
  * @version 1.0.0
  *
  */
@@ -14,7 +14,38 @@ var userInfoArray = [];  // ログインユーザー情報
 var emplInfoArray = [];  // 対象社員情報
 var docType = "";  // 閲覧文書分類コード
 
-
+/* *********************************************
+*エラーメッセージダイアログを定義
+********************************************** */
+$(function() {
+	$("#message").dialog({
+	    autoOpen: false,
+	    modal: true,
+	    title: "エラーメッセージ",
+	    width: 400,
+	    height: 200,
+	    buttons: [
+	    	{
+	            text: 'OK',
+	            class:'d-button',
+	            click: function() {
+	                //ボタンを押したときの処理
+	            	$(this).dialog("close");
+	            	window.close();
+	            }
+	        }
+	    ]
+	});
+});
+/* *********************************************
+ *処理メッセージ表示
+ ********************************************** */
+function displayMessage(str) {
+	$('#message').empty();
+	$('#message').append("<p>" + str + "</p>");
+	$("#message").dialog("open");
+	return false;
+}
 /* *********************************************
 *初期処理
 ********************************************** */
@@ -121,10 +152,7 @@ function setFileName(docName) {
 *文書内容取得処理
 ********************************************** */
 function subGet() {
-    if (!inputCheck()) {
-        return;
-    }
-
+    
     var url = "http://localhost:8080/ibiDoc/SelectDocumentInfoServlet?ACTION=";
     var action = "search";
     url += action;
@@ -151,19 +179,16 @@ function subGet() {
   // 通信後、結果コード取得
   var retCode = showData(data);
 
-    if (retCode === "-1") {
-        alert("文書情報の取得に失敗しました。");
-        window.close();
-        
-    } else if (retCode === "1") {
-        const docInfo = data[0];
+    if (retCode === "1") {
+		const docInfo = data[0];
         $("#docTitle").text(docInfo.doc_title || "");
         const from = docInfo.expiration_from_dateTime;
         const to = docInfo.expiration_to_dateTime;
         $("#dateFromTo").text(formatExpiration(from, to));
+        	
     } else {
-        alert("エラーが発生しました。");
-        window.close();
+        //エラー"対象文書が存在しません。"
+		displayMessage(getMsg("msg0006_001"));
     }
 }
 
@@ -195,23 +220,6 @@ function showData(data) {
 }
 
     
-/* *********************************************
-* 入力チェック（起動パラメータの最低限チェック）
-********************************************** */
-function inputCheck() {
-    if (!strYyyyMm || strYyyyMm.length !== 6) {
-        alert("年月の指定が不正です。");
-        return false;
-    }
-    if (!docType) {
-        alert("文書分類の指定が不正です。");
-        return false;
-    }
-    if (!$("#fileName").text()) {
-        alert("文書ファイル名が不正です。");
-        return false;
-    }
-    return true;
-}
+
 
 
