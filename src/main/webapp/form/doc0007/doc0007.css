@@ -1,0 +1,71 @@
+@CHARSET "UTF-8";
+
+@CHARSET "UTF-8";
+#view-header{
+	font-weight: bold;
+}
+/* ボタンの幅拡大 */
+.c-button {
+  appearance: none;
+  border: 0;
+  background: #BDD7EE;
+  font-size: 16px;
+  width:100px;
+  border: 2px solid black;
+  height: 25px;
+  text-align: center;
+}
+
+.c-button:hover {
+  background: #006699;
+  color: #ffffff;
+  border: 2px solid black;
+}
+
+.c-button:focus {
+  outline: none;
+  border: 2px solid black;
+
+}
+/* upload button */
+.originalFileBtn {
+    /* border: 3px solid; */
+    border: 0;
+	background: #cecece;
+  	border-radius: 3px;
+  	font-size: 14px;
+    display: inline-block;
+    padding: 2px 1em;
+    position: relative;
+}
+
+.originalFileBtn:hover {
+  background: #4e4e4e;
+  color: #ffffff;
+}
+
+.originalFileBtn input[type="file"] {
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+/* ダイアログのボタンの位置中央 */
+.ui-dialog-buttonset{
+   width: 100%;
+   display: flex;
+   display: -webkit-flex;
+   text-align: center;
+   justify-content: space-around;
+   -webkit-justify-content: space-around;
+}
+
+/* ダイアログのタイトルバー */
+.ui-dialog-titlebar{
+   padding: 0.3rem !important;
+   font-size:14px;
+   font-weight: normal;
+}
