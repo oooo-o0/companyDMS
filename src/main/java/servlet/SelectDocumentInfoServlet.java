@@ -24,6 +24,10 @@ import struct.SendReciveTranKeyInfo;
 
 /**
  * Servlet implementation class SelectDocumentInfoServlet
+ * 文書閲覧用サーブレット
+ * @author A.T
+ *    Date:2025/06/19
+ * @version 1.0.0
  */
 @WebServlet("/SelectDocumentInfoServlet")
 public class SelectDocumentInfoServlet extends BaseServlet implements CommonTableAccessIF {

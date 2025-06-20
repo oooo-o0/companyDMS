@@ -26,6 +26,10 @@ import struct.UpdateInfo;
 
 /**
  * Servlet implementation class UpdateDocumentInfoServlet
+ * 文書更新用サーブレット
+ * @author A.T
+ *    Date:2025/06/19
+ * @version 1.0.0
  */
 @WebServlet("/UpdateDocumentInfoServlet")
 public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTableAccessIF {
@@ -72,22 +76,37 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 	/**
 	 * 主処理（文書情報更新サーブレット）
 	 * 
-	 * リクエストからパラメータを取得・検証し、対象の送受信トランおよび文書明細が存在する場合に
-	 * 文書情報の更新処理（削除＋追加）を実施します。
+	 * リクエストパラメータを取得・検証し、送受信トラン・明細・文書情報の各テーブルに対して
+	 * 文書情報の更新処理を行います。
+	 * 
+	 * 更新処理の内容：
+	 * - 送受信トラン・文書情報の存在チェック
+	 * - 更新後の文書名重複チェック（送受信明細／文書内容）
+	 * - 文書削除後、更新文書名で再登録（DELETE＋INSERT）
+	 * - 送受信トランの更新（ヘッダ更新）
 	 * 
 	 * 処理順序：
-	 *  1. 必須パラメータの存在チェック
-	 *  2. 送受信トラン（ヘッダ）の存在チェック
-	 *  3. 更新後文書の重複チェック
-	 *  4. 対象文書の存在チェック
-	 *  5. 更新処理（削除、ヘッダ更新、INSERT）
+	 *  1. 必須パラメータの取得とチェック
+	 *  2. 同一文書名チェック（早期リターン）
+	 *  3. 送受信トランの存在確認
+	 *  4. 更新後文書の重複チェック（送受信明細／文書内容）
+	 *  5. 更新前文書の存在チェック（送受信明細／文書内容）
+	 *  6. 送受信トランの更新（UPDATE）
+	 *  7. 旧文書データの削除（送受信明細／文書内容）
+	 *  8. 新文書データの登録（送受信明細／文書内容）
+	 * 
+	 * @param request HTTPリクエスト（パラメータ含む）
+	 * @param sendRDao 送受信トラン用DAO
+	 * @param sendRDtlDao 送受信明細用DAO
+	 * @param docDao 文書内容用DAO
 	 * 
 	 * @return int 
-	 *   1: 更新完了  
-	 *   0: 対象の送受信トランまたは文書が存在しません  
-	 *  -1: 更新後の文書名が既に存在します（重複）  
-	 *  -2: CRUD操作中にエラーが発生しました
+	 *   1 : 更新成功  
+	 *   0 : 対象の送受信トランまたは文書が存在しません  
+	 *  -2 : 文書名が同一、または重複により更新不要／不可  
+	 *  -1 : トランザクション処理中にエラーが発生しました
 	 */
+
 	private int updateDocumentInfo(HttpServletRequest request,
 			CommonTableAccessIF sendRDao,
 			CommonTableAccessIF sendRDtlDao,
@@ -152,24 +171,17 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 		}
 
 		// 1-2, パラメータ不足のチェック（必須項目が空の場合は0を返す）
-		if ("".equals(send_recive_type) || "".equals(year_month) || "".equals(empl_code) || 
-			"".equals(doc_type) || "".equals(target_doc_name) || "".equals(update_doc_name) || 
-			"".equals(update_userid) || "".equals(update_datetime) || "".equals(update_programid) ||
-			"".equals(expiration_from_dateTime) || "".equals(expiration_to_dateTime)) {
+		if ("".equals(send_recive_type) || "".equals(year_month) || "".equals(empl_code) ||
+				"".equals(doc_type) || "".equals(target_doc_name) || "".equals(update_doc_name)) {
 			return 0; // 対象文書が存在しません
 		}
-		// ★デバッグ用ログを追加
+		// デバッグ用ログ
 		System.out.println("Debug: target_doc_name = [" + target_doc_name + "]");
 		System.out.println("Debug: update_doc_name = [" + update_doc_name + "]");
 		System.out.println("Debug: target_doc_name.length() = " + target_doc_name.length());
 		System.out.println("Debug: update_doc_name.length() = " + update_doc_name.length());
-		System.out.println("Debug: target_doc_name.equals(update_doc_name) = " + target_doc_name.equals(update_doc_name));
-
-		if (target_doc_name != null && update_doc_name != null && 
-			    target_doc_name.trim().equals(update_doc_name.trim())) {
-			    System.out.println("Debug: 同一文書名のため早期リターン");
-			    return -1; // 同一文書名の場合は更新不要として正常終了
-			}
+		System.out
+				.println("Debug: target_doc_name.equals(update_doc_name) = " + target_doc_name.equals(update_doc_name));
 
 		//更新トランザクション用にDBコネクションを用意
 		Connection con = getConn();
@@ -182,60 +194,67 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			sendReciveKey.setSend_recive_type(send_recive_type);
 			sendReciveKey.setYear_month(year_month);
 			sendReciveKey.setEmpl_code(empl_code);
-			sendRDao.setParam(sendReciveKey);  // ← パラメータセット必須
+			sendRDao.setParam(sendReciveKey); // ← パラメータセット必須
 			SendReciveTranDto sendReciveDto = (SendReciveTranDto) sendRDao.selectDataByKey(con);
-			
+
 			// 作成履歴が存在しない場合
-			if (sendReciveDto.getEmpl_code() == null) {
+			if (sendReciveDto == null ||
+					sendReciveDto.getEmpl_code() == null ||
+					sendReciveDto.getEmpl_code().trim().isEmpty()) {
 				return 0; // 対象文書が存在しません
 			}
-			
+
+			// 文書名が同一かどうかの比較変数
+			boolean isSameDocName = target_doc_name != null && update_doc_name != null &&
+					target_doc_name.trim().equals(update_doc_name.trim());
 
 			// 3. 重複チェック（更新後文書名で既存文書があるか）
 			// 3-1. 送受信明細トランでチェック
-			SendReciveDetailTranKeyInfo updateKey = new SendReciveDetailTranKeyInfo();
-			updateKey.setSend_recive_type(send_recive_type);
-			updateKey.setYear_month(year_month);
-			updateKey.setEmpl_code(empl_code);
-			updateKey.setDoc_type(doc_type);
-			updateKey.setDoc_name(update_doc_name);
-			sendRDtlDao.setParam(updateKey);
-			SendReciveDetailTranDto existingUpdate = (SendReciveDetailTranDto) sendRDtlDao.selectDataByKey(con);
+			if (!isSameDocName) {
+				// 3-1. 送受信明細トランでチェック
+				SendReciveDetailTranKeyInfo updateKey = new SendReciveDetailTranKeyInfo();
+				updateKey.setSend_recive_type(send_recive_type);
+				updateKey.setYear_month(year_month);
+				updateKey.setEmpl_code(empl_code);
+				updateKey.setDoc_type(doc_type);
+				updateKey.setDoc_name(update_doc_name);
+				sendRDtlDao.setParam(updateKey);
+				SendReciveDetailTranDto existingUpdate = (SendReciveDetailTranDto) sendRDtlDao.selectDataByKey(con);
 
-			// ★修正版：重複チェック（デバッグログ追加）
-		    System.out.println("Debug: existingUpdate = " + existingUpdate);
-		    System.out.println("Debug: existingUpdate.getDoc_name() = " + 
-		                      (existingUpdate != null ? existingUpdate.getDoc_name() : "null"));
-		    
-		    // 更新文書が送受信明細トランに存在した場合
-		    if (existingUpdate != null && existingUpdate.getDoc_name() != null && 
-		        !existingUpdate.getDoc_name().trim().isEmpty()) {
-		        System.out.println("Debug: 送受信明細トランで重複検出");
-		        return -1; // 文書が既に存在します
-		    }
+				// 重複チェック（デバッグログ追加）
+				System.out.println("Debug: existingUpdate = " + existingUpdate);
+				System.out.println("Debug: existingUpdate.getDoc_name() = " +
+						(existingUpdate != null ? existingUpdate.getDoc_name() : "null"));
 
+				// 更新文書が送受信明細トランに存在した場合
+				if (existingUpdate.getDoc_name() != null &&
+						!existingUpdate.getDoc_name().trim().isEmpty()) {
+					System.out.println("Debug: 送受信明細トランで重複検出");
+					return ret = -2; // 文書が既に存在します
+				}
 
-			// 3-2. 文書内容でチェック
-			DocBodyKeyInfo updateDocKey = new DocBodyKeyInfo();
-			updateDocKey.setSend_recive_type(send_recive_type);
-			updateDocKey.setYear_month(year_month);
-			updateDocKey.setEmpl_code(empl_code);
-			updateDocKey.setDoc_type(doc_type);
-			updateDocKey.setDoc_name(update_doc_name);
-			docDao.setParam(updateDocKey);
-			DocBodyDto existingDocBody = (DocBodyDto) docDao.selectDataByKey(con);
+				// 3-2. 文書内容でチェック
+				DocBodyKeyInfo updateDocKey = new DocBodyKeyInfo();
+				updateDocKey.setSend_recive_type(send_recive_type);
+				updateDocKey.setYear_month(year_month);
+				updateDocKey.setEmpl_code(empl_code);
+				updateDocKey.setDoc_type(doc_type);
+				updateDocKey.setDoc_name(update_doc_name);
+				docDao.setParam(updateDocKey);
+				DocBodyDto existingDocBody = (DocBodyDto) docDao.selectDataByKey(con);
 
-			// ★修正版：重複チェック（デバッグログ追加）
-		    System.out.println("Debug: existingDocBody = " + existingDocBody);
-		    System.out.println("Debug: existingDocBody.getDoc_name() = " + 
-		                      (existingDocBody != null ? existingDocBody.getDoc_name() : "null"));
+				// 重複チェック（デバッグログ追加）
+				System.out.println("Debug: existingDocBody = " + existingDocBody);
+				System.out.println("Debug: existingDocBody.getDoc_name() = " +
+						(existingDocBody != null ? existingDocBody.getDoc_name() : "null"));
 
-		    // 更新文書が文書内容に存在した場合
-		    if (existingDocBody != null && existingDocBody.getDoc_name() != null && 
-		        !existingDocBody.getDoc_name().trim().isEmpty()) {
-		        System.out.println("Debug: 文書内容で重複検出");
-		        return -1; // 文書が既に存在します
-		    }
+				// 更新文書が文書内容に存在した場合
+				if (existingDocBody.getDoc_name() != null &&
+						!existingDocBody.getDoc_name().trim().isEmpty()) {
+					System.out.println("Debug: 文書内容で重複検出");
+					return ret = -2; // 文書が既に存在します
+				}
+			}
 
 			// 4. 更新前文書存在チェック
 			// 4-1. 送受信明細トランでチェック
@@ -248,10 +267,11 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			sendRDtlDao.setParam(targetKey);
 			SendReciveDetailTranDto targetDetailDto = (SendReciveDetailTranDto) sendRDtlDao.selectDataByKey(con);
 
-			if (targetDetailDto == null || targetDetailDto.getDoc_name() == null) {
-			    return 0; // 対象文書が存在しません
+			if (targetDetailDto == null ||
+					targetDetailDto.getDoc_name() == null ||
+					targetDetailDto.getDoc_name().trim().isEmpty()) {
+				return 0; // 対象文書が存在しません
 			}
-
 
 			// 4-2. 文書内容でチェック
 			DocBodyKeyInfo targetDocKey = new DocBodyKeyInfo();
@@ -264,15 +284,19 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			DocBodyDto targetDocBodyDto = (DocBodyDto) docDao.selectDataByKey(con);
 
 			// 更新前文書が存在しない場合
-			if (targetDocBodyDto.getDoc_name() == null) {
+			if (targetDocBodyDto == null ||
+					targetDocBodyDto.getDoc_name() == null ||
+					targetDocBodyDto.getDoc_name().trim().isEmpty()) {
 				return 0; // 対象文書が存在しません
 			}
 
 			// 4-3. 作成日時・作成ユーザー・作成プログラムIDを取得
-			String create_datetime = sendReciveDto.getInsert_dateTime();
-			String create_userid = sendReciveDto.getInsert_userId();
-			String create_programid = sendReciveDto.getInsert_programId();
-			
+			String target_detail_datetime = targetDetailDto.getInsert_dateTime();
+			String target_detail_userid = targetDetailDto.getInsert_userId();
+			String target_detail_programid = targetDetailDto.getInsert_programId();
+			String target_docbody_datetime = targetDocBodyDto.getInsert_dateTime();
+			String target_docbody_userid = targetDocBodyDto.getInsert_userId();
+			String target_docbody_programid = targetDocBodyDto.getInsert_programId();
 
 			// 4-4. 送受信トラン更新（作成日時・ユーザー・プログラムID以外）
 			UpdateInfo updateInfo = new UpdateInfo();
@@ -280,52 +304,44 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			updateInfo.setUpdate_userId(update_userid);
 			updateInfo.setUpdate_programId(update_programid);
 			sendRDao.setUpdateInfoParam(updateInfo);
-			
+
+			SendReciveTranKeyInfo keyInfo = new SendReciveTranKeyInfo();
+			keyInfo.setSend_recive_type(send_recive_type);
+			keyInfo.setYear_month(year_month);
+			keyInfo.setEmpl_code(empl_code);
+			sendRDao.setParam(keyInfo);
+
 			SendReciveTranSetInfo setInfo = new SendReciveTranSetInfo();
 			setInfo.setDoc_name(update_doc_name);
-			setInfo.setOperation_type("EMPTY");
-			setInfo.setLast_send_recive_datetime("EMPTY");
-			setInfo.setInsert_status("EMPTY");
-			setInfo.setStatus("EMPTY");
-			setInfo.setDetail_num("EMPTY");
-
 			sendRDao.setSetParam(setInfo);
 
-			
-			sendReciveDto.setDoc_name(update_doc_name);
-			sendReciveDto.setUpdate_dateTime(update_datetime);
-			sendReciveDto.setUpdate_userId(update_userid);
-			sendReciveDto.setUpdate_programId(update_programid);
-			sendRDao.setValuesParam(sendReciveDto);
 			ret = Integer.parseInt(sendRDao.updateDataByKey(0, con).toString());
-			
+
 			// 4-5. UPDATEに失敗した場合
 			if (ret < 1) {
 				con.rollback();
 				logger.error("SendReciveTran Update エラー：" + Integer.toString(ret));
-				return -2; // CRUD操作失敗
+				return ret; // CRUD操作失敗
 			}
 
 			// 4-6. 送受信明細トランをDELETE
-			sendRDtlDao.setParam(targetKey);
 			ret = Integer.parseInt(sendRDtlDao.deleteDataByKey(0, con).toString());
-			
+
 			// 4-7. 削除に失敗した場合
 			if (ret < 1) {
 				con.rollback();
 				logger.error("SendReciveDetailTran Delete エラー：" + Integer.toString(ret));
-				return -2; // CRUD操作失敗
+				return ret; // CRUD操作失敗
 			}
 
 			// 4-8. 文書内容をDELETE
-			docDao.setParam(targetDocKey);
 			ret = Integer.parseInt(docDao.deleteDataByKey(0, con).toString());
-			
+
 			// 4-9. 削除に失敗した場合
 			if (ret < 1) {
 				con.rollback();
 				logger.error("DocBody Delete エラー：" + Integer.toString(ret));
-				return -2; // CRUD操作失敗
+				return ret; // CRUD操作失敗
 			}
 
 			// 4-10. 送受信明細トランをINSERT
@@ -342,23 +358,23 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			newDetail.setCheck_status(targetDetailDto.getCheck_status());
 			newDetail.setCheck_datetime(targetDetailDto.getCheck_datetime());
 			newDetail.setFinger_body(targetDetailDto.getFinger_body());
-			// 作成情報は送受信トランから取得
-			newDetail.setInsert_dateTime(create_datetime);
-			newDetail.setInsert_userId(create_userid);
-			newDetail.setInsert_programId(create_programid);
+			// 作成情報は更新前文書から取得
+			newDetail.setInsert_dateTime(target_detail_datetime);
+			newDetail.setInsert_userId(target_detail_userid);
+			newDetail.setInsert_programId(target_detail_programid);
 			// 更新情報はパラメータから設定
 			newDetail.setUpdate_dateTime(update_datetime);
 			newDetail.setUpdate_userId(update_userid);
 			newDetail.setUpdate_programId(update_programid);
-			
+
 			sendRDtlDao.setValuesParam(newDetail);
 			ret = Integer.parseInt(sendRDtlDao.insertData(0, con).toString());
-			
+
 			// 4-11. 追加に失敗した場合
 			if (ret < 1) {
 				con.rollback();
 				logger.error("SendReciveDetailTran Insert エラー：" + Integer.toString(ret));
-				return -2; // CRUD操作失敗
+				return ret; // CRUD操作失敗
 			}
 
 			// 4-12. 文書内容をINSERT
@@ -376,10 +392,10 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			// 有効期限はパラメータから設定
 			newDocBody.setExpiration_from_dateTime(expiration_from_dateTime);
 			newDocBody.setExpiration_to_dateTime(expiration_to_dateTime);
-			// 作成情報は送受信トランから取得
-			newDocBody.setInsert_dateTime(create_datetime);
-			newDocBody.setInsert_userId(create_userid);
-			newDocBody.setInsert_programId(create_programid);
+			// 作成情報は更新前文書から取得
+			newDocBody.setInsert_dateTime(target_docbody_datetime);
+			newDocBody.setInsert_userId(target_docbody_userid);
+			newDocBody.setInsert_programId(target_docbody_programid);
 			// 更新情報はパラメータから設定
 			newDocBody.setUpdate_dateTime(update_datetime);
 			newDocBody.setUpdate_userId(update_userid);
@@ -387,17 +403,16 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 
 			docDao.setValuesParam(newDocBody);
 			ret = Integer.parseInt(docDao.insertData(0, con).toString());
-			
+
 			// 4-13. 追加に失敗した場合
 			if (ret < 1) {
 				con.rollback();
 				logger.error("DocBody Insert エラー：" + Integer.toString(ret));
-				return -2; // CRUD操作失敗
+				return ret; // CRUD操作失敗
 			}
 
 			// 4-14. 追加に成功した場合コミット
 			con.commit();
-			ret = 1; // 更新成功
 
 		} catch (SQLException e) {
 			try {
@@ -408,7 +423,6 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 				e1.printStackTrace();
 				logger.error("ロールバック処理エラー：" + e1.getMessage());
 			}
-			ret = -2;
 		} catch (Exception e) {
 			try {
 				con.rollback();
@@ -418,7 +432,6 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 				e1.printStackTrace();
 				logger.error("ロールバック処理エラー：" + e1.getMessage());
 			}
-			ret = -2;
 		} finally {
 			if (con != null) {
 				try {
@@ -439,7 +452,7 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 		String ret2 = "[" + ret + "]";
 		return ret2;
 	}
-	
+
 	// 以下のメソッドはインタフェースでのデフォルトメソッドです。
 	// 削除は駄目です。使用する事も駄目です。
 	/* (非 Javadoc)

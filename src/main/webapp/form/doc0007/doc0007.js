@@ -1,8 +1,8 @@
 /**
  * doc0007.js
  * 文書更新（管理者用）
- * @author A.Tomita
- *    Date:2025/06/09
+ * @author A.T
+ *    Date:2025/06/19
  * @version 1.0.0
  *
  */
@@ -11,11 +11,21 @@
 //グローバル変数
 var strYyyyMm = "";      // 年月の保存用
 var userInfoArray = [];  // ログインユーザー情報
-var emplInfoArray = [];  // 対象社員情報
+var emplInfo = [];  // 対象社員情報
 var docType = "";  // 閲覧文書分類コード
 var docName = "";
 var decDocName = "";
 var empl_code = "";
+var target_from = "";
+var target_to = "";
+var upddate_from = "";
+var update_to = "";
+var target_doc_name = "";
+var update_doc_name = "";
+var filesData;
+var filePath;
+
+
 
 /* *********************************************
 *エラーメッセージダイアログを定義
@@ -49,28 +59,6 @@ function displayMessage(str) {
 	$("#message").dialog("open");
 	return false;
 }
-/* *********************************************
-*初期処理
-********************************************** */
-function docInit() {
-	userInfoArray = init("");
-	var emplName = userInfoArray[1];
-	$("#useName").text(emplName);
-	//登録ボタンのイベント設定
-	$("#updateBtn").click(function() {
-		subUpdate();
-	});
-	//ファイル名選択表示
-	$("#fileSelectBtn").on("change", function() {
-		const file = this.files[0];
-		if (file) {
-			$("#file_select_text").val(file.name);
-		}
-	});
-
-
-	return;
-}
 
 /* *********************************************
 * 画面の初期ロード
@@ -103,22 +91,44 @@ $(window).on('load', function() {
 	docName = paramMap["dn"];
 	var emplCode = paramMap["ecd"];
 
-	// 対象社員情報取得
-	if (emplCode) {
-		emplInfoArray = getEmplMstInfo(emplCode);
-	} else {
-		emplInfoArray = getEmplMstInfo(userInfoArray[0]);
-	}
-
 	// 各表示項目セット
 	setTargetYm(strYyyyMm);
 	setDocTypeLabel(docType);
-	setTargetEmplName(emplCode || (emplInfoArray.length ? emplInfoArray[0] : ""));
+	setTargetEmplName(emplCode);
 	setFileName(docName);
 
 	// 文書情報取得
 	subGet();
 });
+
+/* *********************************************
+*初期処理
+********************************************** */
+function docInit() {
+	userInfoArray = init("");
+	var emplName = userInfoArray[1];
+	$("#useName").text(emplName);
+	//更新ボタンのイベント設定
+	$("#updateBtn").click(function() {
+		subUpdate();
+	});
+	//ファイル名選択表示
+	$("#fileSelectBtn").on("change", function() {
+		const file = this.files[0];
+		if (file) {
+			$("#file_select_text").val(file.name);
+		}
+	});
+	//ファイルアップロードボタンの選択イベント設定
+	$("#fileSelectBtn").change(function() {
+		filePath = $(this).prop('files')[0].name;
+		filesData = $(this).prop('files')[0];
+		$("#file_select_text").val(filePath);
+	});
+
+
+	return;
+}
 
 
 /* *********************************************
@@ -135,20 +145,17 @@ function setTargetYm(ym4) {
 ********************************************** */
 function setTargetEmplName(emplCode) {
 	empl_code = String(emplCode);
-	if (!emplCode) return;
-	var emplInfo = getEmplMstInfo(emplCode);
-	if (emplInfo && emplInfo.length > 1) {
-		$("#targetEmplName").text(emplInfo[1]); // 1番目が名前と想定
-	} else {
-		$("#targetEmplName").text(emplCode); // 取得失敗時はコード表示
-	}
+	emplInfo = getEmplMstInfo(empl_code);
+
+	$("#targetEmplName").text(emplInfo[1]);
 }
+
 /* *********************************************
  * ファイル名初期表示
  ********************************************** */
 function setFileName(docName) {
-	decDocName = decodeBase64Utf8(docName);
-	$("#file_select_text").val(decDocName);
+	target_doc_name = decodeBase64Utf8(docName);
+	$("#file_select_text").val(target_doc_name);
 }
 
 
@@ -170,15 +177,12 @@ function subGet() {
 	url += action;
 
 	var yearMonth = $("#targetYm").text().replace("/", "");
-	var emplName = emplInfoArray[0];
-	decDocName = decodeBase64Utf8(docName);
-
 
 	var senddata = {
 		send_recive_type: "1",
 		year_month: yearMonth,
-		empl_code: emplName,
-		doc_name: decDocName,
+		empl_code: emplInfo[0],
+		doc_name: target_doc_name,
 		doc_type: docType
 	};
 
@@ -195,12 +199,14 @@ function subGet() {
 	if (retCode === "1") {
 		const docInfo = data[0];
 		//文書タイトルの初期表示
-		$("#docTitle").text(docInfo.doc_title || "");
+		var docTitle = $("#docTitle").text(docInfo.doc_title || "");
 		//有効期限の初期表示
-		const from = formatDate(docInfo.expiration_from_dateTime);
-		const to = formatDate(docInfo.expiration_to_dateTime);
+		var from = formatDate(docInfo.expiration_from_dateTime);
+		var to = formatDate(docInfo.expiration_to_dateTime);
 		$("#dateFrom").val(from);
 		$("#dateTo").val(to);
+		target_from = unformatDate(from);
+		target_to = unformatDate(to);
 	} else {
 		//エラー"対象文書が存在しません。"
 		displayMessage(getMsg("msg0006_001"));
@@ -213,14 +219,15 @@ const formatDate = (dateStr) => {
 	if (!dateStr || dateStr.length !== 8) return "";
 	return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}`;
 };
-/* *********************************************
-*文書内容を取得
-********************************************** */
-function showData(data) {
-	if (!data || data.length === 0) return "-1";
-	return String(data[0].rtn_code || "-1");
-}
 
+
+/* *********************************************
+*有効期限の変換（YYYY-MM-DD → YYYYMMDD に変換）
+********************************************** */
+const unformatDate = (dateStr) => {
+	if (!dateStr || dateStr.length !== 10) return "";
+	return dateStr.replace(/-/g, "");
+};
 
 
 
@@ -236,11 +243,11 @@ function subUpdate() {
 	//チェックエラーでない場合は登録処理を実施
 	var url = "http://localhost:8080/ibiDoc/UpdateDocumentInfoServlet?ACTION=";
 	var action = "update";
-	 
+
 	url += action;
-	decDocName = decodeBase64Utf8(docName);
 
 	var dTime = nowTimeVal();
+
 
 	var senddata = {
 		/*  送受信トラン  */
@@ -249,11 +256,11 @@ function subUpdate() {
 		// 年月
 		year_month: String($("#targetYm").text()).replace("/", ""),
 		// 社員コード
-		empl_code: emplInfoArray[0],
+		empl_code: emplInfo[0],
 		// 文書名(更新前/文書)
-		target_doc_name: decDocName,
+		target_doc_name: target_doc_name,
 		// 文書名(更新/文書)
-		update_doc_name: String($("#file_select_text").val()),
+		update_doc_name: update_doc_name,
 		// 更新日時
 		update_datetime: dTime,
 		// 更新ユーザ
@@ -263,9 +270,9 @@ function subUpdate() {
 		// 文書種類
 		doc_type: docType,
 		// 有効期限(開始)
-		expiration_from_dateTime: String($("#dateFrom").val()).replaceAll("-", ""),
+		expiration_from_dateTime: upddate_from,
 		// 有効期限(終了)
-		expiration_to_dateTime: String($("#dateTo").val()).replaceAll("-", ""),
+		expiration_to_dateTime: update_to,
 	};
 
 	// ajax通信（同期）
@@ -278,17 +285,32 @@ function subUpdate() {
 	var retCode = showData(data);
 
 	if (retCode == "1") {
+
+		// ファイルアップロードが必要か条件チェック
+		//文書名が変更されている場合
+		if (update_doc_name.trim() !== target_doc_name.trim()) {
+			// ファイルアップロード実施
+			subUpload();
+		}
 		//更新が完了しました。
 		displayMessage(getMsg("msg0005_006"));
-	} else if (retCode == "-1") {
+	} else if (retCode == "-2") {
 		//既に登録済みのファイルが指定されています。
 		displayMessage(getMsg("msg0005_010"));
+	} else if (retCode == "0") {
+		//対象文書が存在しません
+		displayMessage(getMsg("msg0006_001"));
 	} else {
 		//更新が失敗しました。
 		displayMessage(getMsg("msg0005_007"));
 	}
 }
-
+/* *********************************************
+*更新結果を取得
+********************************************** */
+function showData(data) {
+	return String(data[0].rtn_code);
+}
 
 /* *********************************************
 *入力チェック処理
@@ -296,39 +318,75 @@ function subUpdate() {
 var inputCheck = function() {
 	var ret = true;
 
-	// 文書ファイル名の取得
-	var docFileName = $('#file_select_text').val();
+	update_doc_name = String($("#file_select_text").val());
+	upddate_from = String($("#dateFrom").val()).replaceAll("-", "");
+	update_to = String($("#dateTo").val()).replaceAll("-", "");
 
 	// 文書ファイルに値が入っているか？
-	if (isBlank(docFileName)) {
+	if (isBlank(update_doc_name)) {
 		displayMessage(getMsg("msg0005_003")); // 文書ファイルは必須です。
 		return false;
 	}
 
 	// ファイル名の桁数チェック
-	if (docFileName.length > 35) {
+	if (update_doc_name.length > 35) {
 		displayMessage(getMsg("msg0005_013")); // 文書ファイル名は35文字以内にしてください。
 		return false;
 	}
 
-	// 有効期限の開始・終了日取得
-	var strDateFrom = $("#dateFrom").val();
-	var strDateTo = $("#dateTo").val();
 
 	// 有効期限未入力チェック
-	if (isBlank(strDateFrom) || isBlank(strDateTo)) {
+	if (isBlank(upddate_from) || isBlank(update_to)) {
 		displayMessage(getMsg("msg0005_012")); // 有効期限は必須です
 		return false;
 	}
 
 	// 有効期限の大小チェック
-	var fromDate = new Date(strDateFrom);
-	var toDate = new Date(strDateTo);
+	var fromDate = new Date(upddate_from);
+	var toDate = new Date(update_to);
 
 	if (fromDate.getTime() > toDate.getTime()) {
 		displayMessage(getMsg("msg0005_011")); // 有効期限の開始日が終了日を上回っています。
 		return false;
 	}
+	// 前回登録された内容とすべて同じ場合のチェック
+	if (
+		update_doc_name.trim() === target_doc_name.trim() && // 文書名が同じ
+		upddate_from === target_from &&                     // 有効期限Fromが同じ
+		update_to === target_to                             // 有効期限Toが同じ
+	) {
+		displayMessage(getMsg("msg0007_001"));
+		// 前回登録した内容です。更新する場合はファイル名または有効期限を変更してください。
+		return false;
+	}
 	return ret;
+}
+
+
+/* *********************************************
+*アップロード処理
+********************************************** */
+function subUpload() {
+
+	var url = "http://localhost:8080/ibiDoc/UploadFileServlet?ACTION=";
+	var action = "upload";
+
+
+	url += action;
+	url += "&YM=";
+	url += $('#targetYm').text();
+	url += "&EN=";
+	url += $('#docTitle').text();
+	url += "&ID=";
+	url += emplInfo[1];
+	url += "&DT=";
+	url += $('#docType').text();
+
+	var fd = new FormData();
+	fd.append("upfile", filesData);
+
+	//ajax通信
+	var jqXHR = postUpload(fd, url);
+
 }
 

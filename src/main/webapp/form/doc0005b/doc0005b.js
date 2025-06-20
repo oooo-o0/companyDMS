@@ -20,6 +20,14 @@ var filesData;
 
 var selectDocText;
 
+var parmArray = [];
+
+var docTitl = "";
+
+var titleYm = "";
+
+var nengetu = "";
+
 $(function() {
 	/* *********************************************
 	 *エラーメッセージダイアログを定義
@@ -98,9 +106,10 @@ function subChange() {
 
 	//年月と選択文字で文書タイトルを自動セット
      selectDocText = $('option:selected').text();
-     var nengetu = $("#targetYm").text();
-     var titleYm = String(nengetu).substring(0,4) + "年"+ String(nengetu).substring(5,7) + "月";
-     $("#docTitle").val(titleYm + selectDocText);
+     nengetu = $("#targetYm").text();
+     titleYm = String(nengetu).substring(0,4) + "年"+ String(nengetu).substring(5,7) + "月";
+     docTitl = titleYm + selectDocText;
+     $("#docTitle").val(docTitl);
 
 }
 
@@ -122,8 +131,8 @@ $(window).on('load',function(){
 
 	//起動パラメータ取得
 	var parm = $(location).attr('search');
-	var parmArray = [];
-	var parmArray = String(parm).split("?");
+	
+	parmArray = String(parm).split("?");
 
 	//年月の初期処理
 	monthInit(parmArray[1]);
@@ -241,7 +250,7 @@ function subInsert() {
 	    // 作成ユーザ
 	    insert_userId : userInfoArray[0],
 	    // 作成プログラムID
-	    insert_programId : "doc0005b",
+	    insert_programId : "doc0005",
 
 	    /*  送受信明細トラン  */
 	    // 文書種類
@@ -360,23 +369,16 @@ function subUpload() {
 	var url = "http://localhost:8080/ibiDoc/UploadFileServlet?ACTION=";
     var action = "upload";
 
-    var hel = String($("#targetYm").text()).replace("/","") + String(emplInfoArray[0]);
-
-    //NameをBASE64エンコード変換
-    var encoded = encodeBase64Utf8(hel);
-
-    //文書分類名
-    var docTypeName = encodeBase64Utf8(selectDocText);
 
     url += action;
     url += "&YM=";
-    url += String($("#targetYm").text()).replace("/","");
+    url += titleYm;
     url += "&EN=";
-    url += encoded;
+    url += docTitl;
     url += "&ID=";
     url += emplInfoArray[0];
     url += "&DT=";
-    url += docTypeName;
+    url += selectDocText;
     
     var fd = new FormData();
     fd.append("upfile", filesData);
@@ -385,6 +387,3 @@ function subUpload() {
     var jqXHR = postUpload(fd,url);
 
 }
-
-
-

@@ -4,7 +4,7 @@
 <head>
 
 	<meta charset="UTF-8">
-	<title>文書登録画面（管理者用）</title>
+	<title>文書更新画面（管理者用）</title>
 
 	<link rel="stylesheet" href="../../lib/jQuery/1.13.2/jquery-ui.min.css">
 	<script src="../../lib/jQuery/jquery-3.7.1.min.js"></script>
@@ -18,22 +18,17 @@
 
 </head>
 
-<!--<body style="background-color:#E2EFDA;margin: 0px;padding: 0px;">-->
-
 <body style="margin: 30px;padding: 0px;">
 
-	<!-- エラーメッセージ  -->
-	<div id="message"></div>
-
-	<!--	<table style="background-color:#F2F2F2; border:none;border-collapse:collapse;">-->
-
-	<table style="border: none;border-collapse: collapse;">
+<!-- エラーメッセージ  -->
+<div id="message"></div>
+	<table style="border:none;border-collapse:collapse;">
 		<tr>
 			<td colspan="3" style="background-color: #DDEBF7;width: 1050px;height: 30px;">
 				<label style="background-color: #DDEBF7;font-size: 16px;margin: 0px 0px 0px 360px;"
-					for="name1">文書登録</label>
+					for="name1"id="view-header">文書登録</label>
 				<label style="background-color: #DDEBF7;font-size: 16px;margin: 0px 0px 0px 50px;"
-					for="name1">変更</label>
+					for="name1"id="view-header">変更</label>
 			</td>
 			<td style="width: 600px;"></td>
 		</tr>
@@ -90,15 +85,15 @@
 						</td>
 					</tr>
 					<tr style="height:40px;">
-						<th colspan="3" align="left" style="font-size:16px;font-weight: normal;">
-							文書ファイル
-						</th>
+      					<th colspan="3" align="left" style="font-size:16px;font-weight: normal;">
+      						文書ファイル
+      					</th>
 						<td>
-							<input type="text" id="file_select_text" size="35" readonly />
-							<span class="originalFileBtn ">
-								参照
-								<input type="file" id="fileSelectBtn" />
-							</span>
+							<input type="text" id="file_select_text" size="35" readonly/>
+ 							<span class="originalFileBtn ">
+ 								参照
+  								<input type="file" name="upfile" id="fileSelectBtn"/>
+ 							</span>
 						</td>
 					</tr>
 					<tr style="height:140px;">
