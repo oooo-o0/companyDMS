@@ -2,34 +2,39 @@
  * doc0007.js
  * 文書更新（管理者用）
  * @author A.T
- *    Date:2025/06/19
+ *    Date:2025/06/23
  * @version 1.0.0
  *
  */
 
 
-//グローバル変数
-var strYyyyMm = "";      // 年月の保存用
-var userInfoArray = [];  // ログインユーザー情報
-var emplInfo = [];  // 対象社員情報
-var docType = "";  // 閲覧文書分類コード
-var docName = "";
-var decDocName = "";
-var empl_code = "";
+// ========== グローバル変数 ==========
+// ログインユーザー情報を保持する配列 [ユーザーID, ユーザー名, ...]
+var userInfoArray = [];
+// 対象社員の情報 [社員コード, 社員名, ...]
+var emplInfo = [];
+// 対象文書の分類コード（例: 001 など）
+var docType = "";
+// 有効期限（更新前）の保持用
 var target_from = "";
 var target_to = "";
+// 有効期限（更新後）の保持用
 var upddate_from = "";
 var update_to = "";
+// 文書名（更新前・表示用）
 var target_doc_name = "";
+// 文書名（更新後・入力値）
 var update_doc_name = "";
+// アップロード対象ファイル
 var filesData;
-var filePath;
+
 
 
 
 /* *********************************************
 *エラーメッセージダイアログを定義
 ********************************************** */
+// jQuery UIダイアログを使用して、エラー表示用のモーダルを定義
 $(function() {
 	$("#message").dialog({
 		autoOpen: false,
@@ -44,7 +49,6 @@ $(function() {
 				click: function() {
 					//ボタンを押したときの処理
 					$(this).dialog("close");
-					window.close();
 				}
 			}
 		]
@@ -86,9 +90,9 @@ $(window).on('load', function() {
 
 
 	// 各値取得
-	strYyyyMm = paramMap["ym"];
+	var strYyyyMm = paramMap["ym"];
 	docType = paramMap["dt"];
-	docName = paramMap["dn"];
+	var docName = paramMap["dn"];
 	var emplCode = paramMap["ecd"];
 
 	// 各表示項目セット
@@ -121,7 +125,7 @@ function docInit() {
 	});
 	//ファイルアップロードボタンの選択イベント設定
 	$("#fileSelectBtn").change(function() {
-		filePath = $(this).prop('files')[0].name;
+		var filePath = $(this).prop('files')[0].name;
 		filesData = $(this).prop('files')[0];
 		$("#file_select_text").val(filePath);
 	});
@@ -144,7 +148,7 @@ function setTargetYm(ym4) {
 * 社員名ラベル表示（社員コードから名称）
 ********************************************** */
 function setTargetEmplName(emplCode) {
-	empl_code = String(emplCode);
+	var empl_code = String(emplCode);
 	emplInfo = getEmplMstInfo(empl_code);
 
 	$("#targetEmplName").text(emplInfo[1]);
@@ -199,7 +203,7 @@ function subGet() {
 	if (retCode === "1") {
 		const docInfo = data[0];
 		//文書タイトルの初期表示
-		var docTitle = $("#docTitle").text(docInfo.doc_title || "");
+		$("#docTitle").text(docInfo.doc_title || "");
 		//有効期限の初期表示
 		var from = formatDate(docInfo.expiration_from_dateTime);
 		var to = formatDate(docInfo.expiration_to_dateTime);
@@ -297,7 +301,7 @@ function subUpdate() {
 	} else if (retCode == "-2") {
 		//既に登録済みのファイルが指定されています。
 		displayMessage(getMsg("msg0005_010"));
-	} else if (retCode == "0") {
+	} else if (retCode == "-1") {
 		//対象文書が存在しません
 		displayMessage(getMsg("msg0006_001"));
 	} else {
@@ -336,29 +340,17 @@ var inputCheck = function() {
 
 
 	// 有効期限未入力チェック
-	if (isBlank(upddate_from) || isBlank(update_to)) {
+	if (!upddate_from || upddate_from.trim() === "" || !update_to || update_to.trim() === "") {
 		displayMessage(getMsg("msg0005_012")); // 有効期限は必須です
 		return false;
 	}
 
 	// 有効期限の大小チェック
-	var fromDate = new Date(upddate_from);
-	var toDate = new Date(update_to);
-
-	if (fromDate.getTime() > toDate.getTime()) {
+	if (upddate_from > update_to) {
 		displayMessage(getMsg("msg0005_011")); // 有効期限の開始日が終了日を上回っています。
 		return false;
 	}
-	// 前回登録された内容とすべて同じ場合のチェック
-	if (
-		update_doc_name.trim() === target_doc_name.trim() && // 文書名が同じ
-		upddate_from === target_from &&                     // 有効期限Fromが同じ
-		update_to === target_to                             // 有効期限Toが同じ
-	) {
-		displayMessage(getMsg("msg0007_001"));
-		// 前回登録した内容です。更新する場合はファイル名または有効期限を変更してください。
-		return false;
-	}
+
 	return ret;
 }
 
@@ -370,17 +362,20 @@ function subUpload() {
 
 	var url = "http://localhost:8080/ibiDoc/UploadFileServlet?ACTION=";
 	var action = "upload";
+	var hel = String($("#targetYm").text()).replace("/", "") + String(emplInfo[0]);
+	var enEn = encodeBase64Utf8(hel);
+	var enDt = encodeBase64Utf8($('#docType').text());
 
 
 	url += action;
 	url += "&YM=";
-	url += $('#targetYm').text();
+	url += String($("#targetYm").text()).replace("/", "");
 	url += "&EN=";
-	url += $('#docTitle').text();
+	url += enEn;
 	url += "&ID=";
-	url += emplInfo[1];
+	url += emplInfo[0];
 	url += "&DT=";
-	url += $('#docType').text();
+	url += enDt;
 
 	var fd = new FormData();
 	fd.append("upfile", filesData);
