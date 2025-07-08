@@ -1,0 +1,29 @@
+@CHARSET "UTF-8";
+#view-header{
+	font-weight: bold;
+}
+/* ボタンの幅拡大 */
+.c-button {
+  appearance: none;
+  border: 0;
+  background: #BDD7EE;
+  font-size: 16px;
+  width:100px;
+  border: 3px solid black;
+  height: 30px;
+  text-align: center;
+}
+
+.c-button:hover {
+  background: #006699;
+  color: #ffffff;
+  border: 3px solid black;
+}
+
+.c-button:focus {
+  outline: none;
+  border: 3px solid black;
+
+}
+
+

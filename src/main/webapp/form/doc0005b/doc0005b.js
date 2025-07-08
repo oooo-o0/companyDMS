@@ -361,29 +361,37 @@ var inputCheck = function() {
 	return ret;
 }
 
+
 /* *********************************************
 *アップロード処理
 ********************************************** */
 function subUpload() {
 
 	var url = "http://localhost:8080/ibiDoc/UploadFileServlet?ACTION=";
-    var action = "upload";
+	var action = "upload";
+	var hel = String($("#targetYm").text()).replace("/", "") + String(emplInfoArray[0]);
 
+	//NameをBASE64エンコード変換
+	var encoded = encodeBase64Utf8(hel);
 
-    url += action;
-    url += "&YM=";
-    url += titleYm;
-    url += "&EN=";
-    url += docTitl;
-    url += "&ID=";
-    url += emplInfoArray[0];
-    url += "&DT=";
-    url += selectDocText;
-    
-    var fd = new FormData();
-    fd.append("upfile", filesData);
+	//文書分類名
+	var docTypeName = encodeBase64Utf8(selectDocText);
 
-    //ajax通信
-    var jqXHR = postUpload(fd,url);
+	url += action;
+	url += "&YM=";
+	url += String($("#targetYm").text()).replace("/", "");
+	url += "&EN=";
+	url += encoded;
+	url += "&ID=";
+	url += emplInfoArray[0];
+	url += "&DT=";
+	url += docTypeName;
+
+	var fd = new FormData();
+	fd.append("upfile", filesData);
+
+	//ajax通信
+	var jqXHR = postUpload(fd, url);
 
 }
+

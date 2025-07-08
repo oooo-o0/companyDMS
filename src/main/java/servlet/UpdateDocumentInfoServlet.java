@@ -102,9 +102,9 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 	 * 
 	 * @return int 
 	 *   1 : 更新成功  
-	 *   0 : 対象の送受信トランまたは文書が存在しません  
+	 *   0 : トランザクション処理中にエラーが発生しました
 	 *  -2 : 文書名が同一、または重複により更新不要／不可  
-	 *  -1 : トランザクション処理中にエラーが発生しました
+	 *  -1 : 対象の送受信トランまたは文書が存在しません  
 	 */
 
 	private int updateDocumentInfo(HttpServletRequest request,
@@ -173,21 +173,19 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 		// 1-2, パラメータ不足のチェック（必須項目が空の場合は0を返す）
 		if ("".equals(send_recive_type) || "".equals(year_month) || "".equals(empl_code) ||
 				"".equals(doc_type) || "".equals(target_doc_name) || "".equals(update_doc_name)) {
-			return 0; // 対象文書が存在しません
+			return -1; // 対象文書が存在しません
 		}
 		// デバッグ用ログ
 		System.out.println("Debug: target_doc_name = [" + target_doc_name + "]");
 		System.out.println("Debug: update_doc_name = [" + update_doc_name + "]");
 		System.out.println("Debug: target_doc_name.length() = " + target_doc_name.length());
 		System.out.println("Debug: update_doc_name.length() = " + update_doc_name.length());
-		System.out
-				.println("Debug: target_doc_name.equals(update_doc_name) = " + target_doc_name.equals(update_doc_name));
+		System.out.println("Debug: target_doc_name.equals(update_doc_name) = " + target_doc_name.equals(update_doc_name));
 
 		//更新トランザクション用にDBコネクションを用意
 		Connection con = getConn();
 
 		try {
-			con.setAutoCommit(false); // トランザクション開始
 
 			// 2-1. 送受信トランに作成履歴存在チェック
 			SendReciveTranKeyInfo sendReciveKey = new SendReciveTranKeyInfo();
@@ -201,16 +199,13 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			if (sendReciveDto == null ||
 					sendReciveDto.getEmpl_code() == null ||
 					sendReciveDto.getEmpl_code().trim().isEmpty()) {
-				return 0; // 対象文書が存在しません
+				return -1; // 対象文書が存在しません
 			}
 
-			// 文書名が同一かどうかの比較変数
-			boolean isSameDocName = target_doc_name != null && update_doc_name != null &&
-					target_doc_name.trim().equals(update_doc_name.trim());
 
 			// 3. 重複チェック（更新後文書名で既存文書があるか）
 			// 3-1. 送受信明細トランでチェック
-			if (!isSameDocName) {
+			if (!target_doc_name.trim().equals(update_doc_name.trim())) {
 				// 3-1. 送受信明細トランでチェック
 				SendReciveDetailTranKeyInfo updateKey = new SendReciveDetailTranKeyInfo();
 				updateKey.setSend_recive_type(send_recive_type);
@@ -270,7 +265,7 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			if (targetDetailDto == null ||
 					targetDetailDto.getDoc_name() == null ||
 					targetDetailDto.getDoc_name().trim().isEmpty()) {
-				return 0; // 対象文書が存在しません
+				return -1; // 対象文書が存在しません
 			}
 
 			// 4-2. 文書内容でチェック
@@ -287,7 +282,7 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			if (targetDocBodyDto == null ||
 					targetDocBodyDto.getDoc_name() == null ||
 					targetDocBodyDto.getDoc_name().trim().isEmpty()) {
-				return 0; // 対象文書が存在しません
+				return -1; // 対象文書が存在しません
 			}
 
 			// 4-3. 作成日時・作成ユーザー・作成プログラムIDを取得
@@ -304,12 +299,6 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			updateInfo.setUpdate_userId(update_userid);
 			updateInfo.setUpdate_programId(update_programid);
 			sendRDao.setUpdateInfoParam(updateInfo);
-
-			SendReciveTranKeyInfo keyInfo = new SendReciveTranKeyInfo();
-			keyInfo.setSend_recive_type(send_recive_type);
-			keyInfo.setYear_month(year_month);
-			keyInfo.setEmpl_code(empl_code);
-			sendRDao.setParam(keyInfo);
 
 			SendReciveTranSetInfo setInfo = new SendReciveTranSetInfo();
 			setInfo.setDoc_name(update_doc_name);
@@ -358,7 +347,6 @@ public class UpdateDocumentInfoServlet extends BaseServlet implements CommonTabl
 			newDetail.setCheck_status(targetDetailDto.getCheck_status());
 			newDetail.setCheck_datetime(targetDetailDto.getCheck_datetime());
 			newDetail.setFinger_body(targetDetailDto.getFinger_body());
-			// 作成情報は更新前文書から取得
 			newDetail.setInsert_dateTime(target_detail_datetime);
 			newDetail.setInsert_userId(target_detail_userid);
 			newDetail.setInsert_programId(target_detail_programid);
